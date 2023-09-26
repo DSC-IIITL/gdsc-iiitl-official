@@ -30,6 +30,7 @@ export async function getSheetsData() {
 
     try {
       const parsedData = parseData(response.data.values);
+      console.log({ sheetData: parsedData.headers });
       return parsedData;
     } catch (error) {
       console.error("Error while parsing the data", error);
