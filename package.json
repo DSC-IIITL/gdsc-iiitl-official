@@ -6,28 +6,37 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start:prisma": "dotenv -e .env.local -- yarn prisma studio"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.11",
+    "@mui/lab": "^5.0.0-alpha.146",
     "@mui/material": "^5.14.11",
     "@mui/x-data-grid": "^6.15.0",
+    "@prisma/client": "^5.3.1",
+    "bcrypt": "^5.1.1",
     "googleapis": "^126.0.1",
+    "jsonwebtoken": "^9.0.2",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
     "sharp": "^0.32.6"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "bson": "^6.1.0",
     "encoding": "^0.1.13",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "prisma": "^5.3.1",
     "typescript": "latest"
   }
 }
