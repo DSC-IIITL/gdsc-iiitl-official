@@ -11,22 +11,21 @@ datasource db {
 }
 
 model Student {
-  id               String         @id @default(auto()) @map("_id") @db.ObjectId
-  enrollmentNumber String         @unique
-  name             String
-  email            String         @unique
-  password         String
-  phoneNumber      String
-  contestEntries   ContestEntry[]
+  id             String         @id @map("_id")
+  name           String
+  email          String         @unique
+  password       String
+  phoneNumber    String
+  contestEntries ContestEntry[]
 }
 
 model ContestEntry {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   student   Student  @relation(fields: [studentId], references: [id])
-  studentId String   @db.ObjectId
+  studentId String
   contest   Contest  @relation(fields: [contestId], references: [id])
   contestId String   @db.ObjectId
-  entry     String
+  entry     Json
   score     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -3,9 +3,13 @@ import Box from "@mui/material/Box";
 import Leaderboard from "../components/Leaderboard";
 import { getSheetsData } from "@/lib/sheets";
 import GDSCHeader from "@/components/GDSCHeader";
+import { notFound } from "next/navigation";
 
 export default async function HomePage() {
-  const sheetData = await getSheetsData();
+  if (!process.env.SHEET_ID) {
+    return notFound();
+  }
+  const sheetData = await getSheetsData(process.env.SHEET_ID);
 
   return (
     <Box

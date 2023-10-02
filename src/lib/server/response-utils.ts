@@ -1,12 +1,10 @@
-export function generateMessage({
-  message,
-  data,
-  error,
-}: {
+export type APIResponse<T> = {
   message: string;
+  data?: T;
   error?: string;
-  data?: any;
-}) {
+};
+
+export function generateMessage({ message, data, error }: APIResponse<any>) {
   return {
     message,
     data: data ?? null,

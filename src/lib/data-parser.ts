@@ -5,7 +5,7 @@ export function parseData(data: any[][]) {
     throw new Error("Headers are undefined!");
   }
 
-  const mappedData: { [x in string]: string }[] = [];
+  const mappedData: { [x in string]?: string }[] = [];
   data.map((row) => {
     mappedData.push(
       row.reduce((acc, curr, index) => {
