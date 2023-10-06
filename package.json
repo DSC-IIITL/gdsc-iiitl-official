@@ -1,33 +1,69 @@
 {
-  "name": "gdsc-leaderboard",
+  "name": "gdsc-iiitl-official",
   "version": "0.1.0",
-  "private": true,
+  "description": "Official website of GDSC IIIT Lucknow",
+  "author": "DSC-IIITL",
+  "license": "MIT",
+  "repository": "https://github.com/dsc-iiitl/gdsc-iiitl-official",
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start:prisma": "dotenv -e .env.local -- yarn prisma studio",
+    "format": "prettier --write src/",
+    "eslint:lint": "eslint src/",
+    "eslint:fix": "eslint --fix src/",
+    "prepare": "husky install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix src/",
+      "prettier --write src/",
+      "git add"
+    ]
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.11",
+    "@mui/lab": "^5.0.0-alpha.146",
     "@mui/material": "^5.14.11",
     "@mui/x-data-grid": "^6.15.0",
+    "@prisma/client": "^5.3.1",
+    "bcrypt": "^5.1.1",
     "googleapis": "^126.0.1",
+    "jsonwebtoken": "^9.0.2",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
     "sharp": "^0.32.6"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "bson": "^6.1.0",
     "encoding": "^0.1.13",
-    "eslint": "latest",
+    "eslint": "^8.50.0",
     "eslint-config-next": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-prettier": "latest",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
+    "prisma": "^5.3.1",
     "typescript": "latest"
   }
 }
