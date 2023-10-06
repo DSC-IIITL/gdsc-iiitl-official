@@ -1,7 +1,11 @@
 import { google } from "googleapis";
 import { parseData } from "./data-parser";
 
-export async function getSheetsData() {
+export function getSheetIdFromUrl(url: string) {
+  return url.split("/d/")[1].split("/")[0] ?? null;
+}
+
+export async function getSheetsData(sheetId: string) {
   try {
     if (typeof window !== "undefined") {
       throw new Error("NO SECRETS ON CLIENT!");
@@ -22,7 +26,7 @@ export async function getSheetsData() {
     const sheets = google.sheets({ version: "v4", auth });
     const range = `Form Responses 1`;
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.SHEET_ID,
+      spreadsheetId: sheetId,
       range,
     });
 

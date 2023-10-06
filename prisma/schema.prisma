@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id             String         @id @map("_id")
+  name           String
+  email          String         @unique
+  password       String
+  phoneNumber    String
+  contestEntries ContestEntry[]
+}
+
+model ContestEntry {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId String
+  contest   Contest  @relation(fields: [contestId], references: [id])
+  contestId String   @db.ObjectId
+  entry     Json
+  score     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Contest {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  description       String
+  startTime         DateTime
+  endTime           DateTime
+  duration          Float
+  contestEntries    ContestEntry[]
+  formLink          String
+  responseSheetLink String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

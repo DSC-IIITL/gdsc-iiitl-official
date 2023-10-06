@@ -2,10 +2,14 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Leaderboard from "../components/Leaderboard";
 import { getSheetsData } from "@/lib/sheets";
-import GDSCBanner from "@/components/GDSCBanner";
+import GDSCHeader from "@/components/GDSCHeader";
+import { notFound } from "next/navigation";
 
 export default async function HomePage() {
-  const sheetData = await getSheetsData();
+  if (!process.env.SHEET_ID) {
+    return notFound();
+  }
+  const sheetData = await getSheetsData(process.env.SHEET_ID);
 
   return (
     <Box
@@ -21,7 +25,7 @@ export default async function HomePage() {
         gap: "2rem",
       }}
     >
-      <GDSCBanner />
+      <GDSCHeader />
       <Leaderboard
         cols={sheetData?.headers || []}
         rows={sheetData?.rows || []}
