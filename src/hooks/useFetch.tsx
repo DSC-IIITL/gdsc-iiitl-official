@@ -1,5 +1,5 @@
 import { APIResponse } from "@/lib/server/response-utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // TODO: Make a global error type
 export type FetchError = {

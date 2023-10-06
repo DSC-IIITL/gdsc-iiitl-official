@@ -1,5 +1,5 @@
 import { verifyToken } from "@/lib/server/auth-utils";
-import { generateMessage, isValidBody } from "@/lib/server/response-utils";
+import { generateMessage } from "@/lib/server/response-utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

@@ -13,24 +13,23 @@ export type EventPageProps = {
 };
 
 export default function EventPage({ eventData }: EventPageProps) {
-  const { data, error, loading, refetch } =
-    useFetch<RefreshContestEntriesResponse>(
-      {
-        input: "/api/events/refresh",
-        init: {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "same-origin",
-          body: JSON.stringify({ id: eventData.id }),
+  const { data, loading, refetch } = useFetch<RefreshContestEntriesResponse>(
+    {
+      input: "/api/events/refresh",
+      init: {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
+        credentials: "same-origin",
+        body: JSON.stringify({ id: eventData.id }),
       },
-      {
-        newStudents: [],
-        updatedEntries: null,
-      }
-    );
+    },
+    {
+      newStudents: [],
+      updatedEntries: null,
+    }
+  );
 
   return (
     <Box

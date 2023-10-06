@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const columns: GridColDef[] = [
   { field: "timestamp", headerName: "Timestamp", width: 90 },
@@ -26,7 +26,8 @@ const rows = [
 ];
 
 export type ContestEntriesTableProps = {
-  data: any;
+  // TODO: Add some props here
+  data: unknown;
 };
 
 export default function ContestEntriesTable() {

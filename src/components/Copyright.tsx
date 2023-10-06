@@ -1,6 +1,6 @@
-import { Typography, Link } from "@mui/material";
+import { Typography, Link, TypographyProps } from "@mui/material";
 
-export default function Copyright(props: any) {
+export default function Copyright(props: TypographyProps) {
   return (
     <Typography
       variant="body2"

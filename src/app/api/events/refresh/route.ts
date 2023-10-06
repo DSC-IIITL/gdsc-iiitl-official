@@ -73,6 +73,8 @@ export async function refreshContestEntries(
   // Create the new contest entries of existing students
   if (newContestEntries && newContestEntries.length > 0) {
     const updatedEntries = await prisma.contestEntry.createMany({
+      // TODO: Fix this
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore U MF TS
       data: [
         ...newContestEntries

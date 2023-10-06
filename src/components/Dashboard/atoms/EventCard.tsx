@@ -37,11 +37,9 @@ export default function EventCard({
   id,
   eventDate,
   eventTitle,
-  formLink,
   responseSheetLink,
   onDelete,
   onEdit,
-  onMoreDetails,
   sx,
 }: EventCardProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

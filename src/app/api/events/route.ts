@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 // TODO: Find a better way to handle api response types in Next.js
-export type ContestResults = Prisma.ContestGetPayload<{}>[];
+export type ContestResults = Prisma.ContestGetPayload<Record<string, never>>[];
 
 export async function fetchContests({
   cursor,
@@ -75,19 +75,22 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export type ContestResult = Prisma.ContestGetPayload<{}> & {
-  contestEntries?: Prisma.ContestEntryGetPayload<{}>[];
-};
+export type ContestResult = Prisma.ContestGetPayload<{
+  include: {
+    contestEntries: true;
+  };
+}>;
 
 export async function fetchContestById(
-  id: Prisma.ContestWhereInput["id"],
-  include?: Prisma.ContestInclude
+  id: Prisma.ContestWhereInput["id"]
 ): Promise<ContestResult | null> {
   const contest = await prisma.contest.findFirst({
     where: {
       id,
     },
-    include,
+    include: {
+      contestEntries: true,
+    },
   });
 
   return contest;
@@ -110,9 +113,7 @@ export async function POST(request: NextRequest) {
     const req = await request.json();
     if (req.id === undefined) throw new Error("id is required");
 
-    const contest = await fetchContestById(req.id, {
-      contestEntries: true,
-    });
+    const contest = await fetchContestById(req.id);
 
     if (contest === null) throw new Error("Contest not found");
     return NextResponse.json(

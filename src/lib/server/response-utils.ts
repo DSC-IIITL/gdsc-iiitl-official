@@ -4,7 +4,7 @@ export type APIResponse<T> = {
   error?: string;
 };
 
-export function generateMessage({ message, data, error }: APIResponse<any>) {
+export function generateMessage<T>({ message, data, error }: APIResponse<T>) {
   return {
     message,
     data: data ?? null,
@@ -12,7 +12,7 @@ export function generateMessage({ message, data, error }: APIResponse<any>) {
   };
 }
 
-export function isValidBody(body: any, fields: string[]) {
+export function isValidBody(body: never, fields: string[]) {
   // TODO: Use Zod instead
   if (body === undefined) {
     return false;

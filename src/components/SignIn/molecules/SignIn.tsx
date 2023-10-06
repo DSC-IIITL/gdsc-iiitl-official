@@ -49,6 +49,8 @@ export default function SignIn() {
       if (response.ok === false) {
         throw new Error("Invalid Credentials");
       }
+      // TODO: Do something with the response
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const json = await response.json();
       setSnackbarState({
         open: true,

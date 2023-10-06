@@ -10,7 +10,6 @@ import EventCard from "../atoms/EventCard";
 export default function Events() {
   const {
     data: events,
-    error,
     loading,
     refetch,
   } = useFetch<ContestResults>(

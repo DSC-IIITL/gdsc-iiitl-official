@@ -1,5 +1,4 @@
 import { Box } from "@mui/material";
-import Image from "next/image";
 import GDSCLogo from "./GDSCLogo";
 
 export default function GDSCHeader() {

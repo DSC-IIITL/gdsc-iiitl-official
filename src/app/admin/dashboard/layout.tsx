@@ -1,7 +1,8 @@
+import React from "react";
 import Dashboard from "@/components/Dashboard";
 import { verifyToken } from "@/lib/server/auth-utils";
 import type { Metadata } from "next";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 // PROTECTED ROUTES

@@ -10,7 +10,6 @@ import CalendarViewMonthIcon from "@mui/icons-material/CalendarViewMonth";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { usePathname, useRouter } from "next/navigation";
 import { getSegmentsFromPath } from "@/lib/utils";
-import NextLink from "next/link";
 
 function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   event.preventDefault();

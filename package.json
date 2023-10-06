@@ -1,13 +1,33 @@
 {
-  "name": "gdsc-leaderboard",
+  "name": "gdsc-iiitl-official",
   "version": "0.1.0",
-  "private": true,
+  "description": "Official website of GDSC IIIT Lucknow",
+  "author": "DSC-IIITL",
+  "license": "MIT",
+  "repository": "https://github.com/dsc-iiitl/gdsc-iiitl-official",
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "start:prisma": "dotenv -e .env.local -- yarn prisma studio"
+    "start:prisma": "dotenv -e .env.local -- yarn prisma studio",
+    "format": "prettier --write src/",
+    "eslint:lint": "eslint src/",
+    "eslint:fix": "eslint --fix src/",
+    "prepare": "husky install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix src/",
+      "prettier --write src/",
+      "git add"
+    ]
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
@@ -32,10 +52,17 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "bson": "^6.1.0",
     "encoding": "^0.1.13",
-    "eslint": "latest",
+    "eslint": "^8.50.0",
     "eslint-config-next": "latest",
+    "eslint-config-prettier": "latest",
+    "eslint-plugin-prettier": "latest",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
+    "prettier": "^3.0.3",
     "prisma": "^5.3.1",
     "typescript": "latest"
   }
