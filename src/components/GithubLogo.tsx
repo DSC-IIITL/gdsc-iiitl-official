@@ -1,13 +1,13 @@
 import Image from "next/image";
-import GithubImage from "../../public/github.png";
+import GithubImage from "../../public/github2.png";
 
 export default function GithubLogo() {
   return (
     <Image
       src={GithubImage}
       alt="Github Logo"
-      width={50}
-      height={50}
+      width={30}
+      height={30}
       style={{ borderRadius: "50%", userSelect: "none" }}
     />
   );
