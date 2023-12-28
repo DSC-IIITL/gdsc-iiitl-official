@@ -1,5 +1,5 @@
-import { getEvents } from "@/app/api/events/route";
 import { UnderConstruction } from "@/components/Construction";
+import { getEvents } from "@/lib/events";
 
 export default async function EventsPage({
   searchParams,
@@ -20,3 +20,6 @@ export default async function EventsPage({
 
   return <UnderConstruction />;
 }
+
+// Opt out of caching for all data requests in the route segment
+export const dynamic = "force-dynamic";
