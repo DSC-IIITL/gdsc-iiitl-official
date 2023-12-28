@@ -1,4 +1,5 @@
 import prisma from "@/lib/db/prisma";
+import { getEvents } from "@/lib/events";
 import { checkAuth } from "@/lib/server/auth-utils";
 import { generateMessage } from "@/lib/server/response-utils";
 import { Prisma } from "@prisma/client";
@@ -6,25 +7,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 // TODO: Find a better way to handle api response types in Next.js
 export type GetEvents = Prisma.EventGetPayload<Record<string, never>>[];
-
-export async function getEvents({
-  cursor,
-  limit,
-  ord,
-}: {
-  cursor?: string;
-  limit?: number;
-  ord?: "asc" | "desc";
-}) {
-  const events = await prisma.event.findMany({
-    take: limit,
-    skip: cursor ? 1 : 0,
-    cursor: cursor ? { id: cursor } : undefined,
-    orderBy: ord ? { id: ord } : undefined,
-  });
-
-  return events;
-}
 
 /**
  * Returns the list of all events
