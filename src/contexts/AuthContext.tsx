@@ -44,7 +44,7 @@ export function useAuth() {
 
   React.useEffect(() => {
     const initializeAuth = async () => {
-      const response = await fetch("/api/auth/check-auth", {
+      const response = await fetch("/api/auth/admin/check-auth", {
         credentials: "include",
       });
       if (response.ok) {

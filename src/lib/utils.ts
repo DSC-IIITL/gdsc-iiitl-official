@@ -34,3 +34,29 @@ export function getSegmentsFromPath(path: string): string[] {
     .split("/")
     .filter((segment) => segment !== "");
 }
+
+export function SeqBrandColor() {
+  const colors = ["#34A853", "#EA4335", "#4285F4", "#FBBC05"] as const;
+
+  let idx = -1;
+
+  return function getColor() {
+    const color = colors[idx];
+    idx = (idx + 1) % colors.length;
+    return color;
+  };
+}
+
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function extractEnrollmentNumber(email: string) {
+  // Email will be of form <enrollment_number>@iiitl.ac.in
+  const enrollmentNumber = email.split("@")[0];
+  const domain = email.split("@")[1];
+  if (domain !== "iiitl.ac.in") {
+    throw new Error("Invalid email");
+  }
+  return enrollmentNumber;
+}

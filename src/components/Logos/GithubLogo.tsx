@@ -1,5 +1,5 @@
 import Image from "next/image";
-import GithubImage from "../../public/github2.png";
+import GithubImage from "../../../public/github2.png";
 
 export default function GithubLogo() {
   return (

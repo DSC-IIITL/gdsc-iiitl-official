@@ -4,17 +4,15 @@ import * as React from "react";
 import {
   CssBaseline,
   TextField,
-  FormControlLabel,
-  Checkbox,
-  Link,
-  Grid,
   Box,
   Typography,
   Container,
   Snackbar,
+  Grid,
+  Link,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import GDSCBanner from "@/components/GDSCBanner";
+import GDSCBanner from "@/components/Logos/GDSCBanner";
 import { useRouter } from "next/navigation";
 import Copyright from "@/components/Copyright";
 
@@ -34,30 +32,44 @@ export default function SignIn() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     console.log("SUBMIT");
     event.preventDefault();
+
+    // Check if the passwords match
+    const password = event.currentTarget["password"].value;
+    const confirmPassword = event.currentTarget["confirm-password"].value;
+    if (password !== confirmPassword) {
+      console.log({ password, confirmPassword });
+      setSnackbarState({
+        open: true,
+        message: "Passwords do not match",
+        severity: "error",
+      });
+      return;
+    }
+
     const data = new FormData(event.currentTarget);
     setLoading(true);
     console.log(data);
     try {
-      const response = await fetch("/api/auth/signin", {
+      const response = await fetch("/api/auth/admin/signup", {
         method: "POST",
         body: JSON.stringify({
           email: data.get("email"),
           password: data.get("password"),
-          rememberMe: data.get("remember"),
+          name: data.get("name"),
         }),
       });
       if (response.ok === false) {
-        throw new Error("Invalid Credentials");
+        throw new Error("Something went wrong. Try again later.");
       }
       // TODO: Do something with the response
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const json = await response.json();
       setSnackbarState({
         open: true,
-        message: "Logged in successfully",
+        message: "Successfully signed up! Login to continue.",
         severity: "success",
       });
-      router.push("/admin/dashboard");
+      router.push("/auth/admin/signin");
     } catch (error) {
       if (error instanceof Error)
         setSnackbarState({
@@ -96,6 +108,16 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
+            id="name"
+            label="Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="email"
             label="Email Address"
             name="email"
@@ -110,11 +132,17 @@ export default function SignIn() {
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirm-password"
+            label="Confirm Password"
+            type="password"
+            id="confirm-password"
+            autoComplete="new-password"
           />
           <LoadingButton
             type="submit"
@@ -123,19 +151,13 @@ export default function SignIn() {
             sx={{ mt: 3, mb: 2 }}
             loading={loading}
           >
-            Sign In
+            Sign Up
           </LoadingButton>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
+          <Grid container gap={"0.25rem"}>
+            {"Already have an account?"}
+            <Link href="/auth/admin/signin" variant="body2">
+              {"Sign In"}
+            </Link>
           </Grid>
         </Box>
       </Box>

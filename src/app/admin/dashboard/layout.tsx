@@ -17,7 +17,8 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const token = cookies().get("token")?.value;
-  if (!token || !verifyToken(token)) redirect("/signin");
+  if (!token || !verifyToken(token, (auth) => auth.role === "admin"))
+    redirect("/auth/admin/signin");
 
   return (
     <html lang="en">

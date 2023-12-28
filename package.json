@@ -7,7 +7,7 @@
   "repository": "https://github.com/dsc-iiitl/gdsc-iiitl-official",
   "private": false,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 80",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -39,6 +39,7 @@
     "@mui/x-data-grid": "^6.15.0",
     "@prisma/client": "^5.3.1",
     "bcrypt": "^5.1.1",
+    "google-auth-library": "^9.4.1",
     "googleapis": "^126.0.1",
     "jsonwebtoken": "^9.0.2",
     "next": "latest",

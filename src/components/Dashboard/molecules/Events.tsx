@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { ContestResults } from "@/app/api/events/route";
+import { GetEvents } from "@/app/api/events/route";
 import { useFetch } from "@/hooks/useFetch";
 import EventCard from "../atoms/EventCard";
 
@@ -12,7 +12,7 @@ export default function Events() {
     data: events,
     loading,
     refetch,
-  } = useFetch<ContestResults>(
+  } = useFetch<GetEvents>(
     {
       input: "/api/events",
       init: {
