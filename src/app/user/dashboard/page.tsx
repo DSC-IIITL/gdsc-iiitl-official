@@ -1,3 +1,5 @@
+import { UnderConstruction } from "@/components/Construction";
+
 export default function UserDashboard() {
-  return <div>User Dashboard</div>;
+  return <UnderConstruction />;
 }

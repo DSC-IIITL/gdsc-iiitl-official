@@ -14,17 +14,16 @@ export default async function getLeaderboardData(): Promise<LeaderboardData> {
     : 1000 * 60 * 60 * 12;
 
   // Fetch the leaderboard
-  const leaderboardEntries = await prisma.globalLeaderboard.findMany({});
+  const leaderboardEntry = await prisma.globalLeaderboard.findFirst({});
 
   // Check when the leaderboard was last updated
-  const lastUpdated = leaderboardEntries?.[0]?.lastUpdated ?? new Date(0);
+  const lastUpdated = leaderboardEntry?.lastUpdated ?? new Date(0);
   if (Date.now() - lastUpdated.getTime() > REFRESH_TIME) {
-    // If the leaderboard is stale, refresh it
+    // leaderboard is stale, refresh it
     await refreshLeaderboard();
   }
 
-  // Fetch the leaderboard again
-  const refreshedLeaderboardEntries = await prisma.globalLeaderboard.findMany({
+  const leaderboardData = await prisma.globalLeaderboard.findMany({
     orderBy: {
       rank: "asc",
     },
@@ -38,8 +37,7 @@ export default async function getLeaderboardData(): Promise<LeaderboardData> {
     },
   });
 
-  // Return the leaderboard
-  return refreshedLeaderboardEntries.map((entry) => {
+  return leaderboardData.map((entry) => {
     return {
       id: entry.userId,
       name: entry.user.name,
@@ -50,7 +48,7 @@ export default async function getLeaderboardData(): Promise<LeaderboardData> {
   });
 }
 
-async function refreshLeaderboard() {
+export async function refreshLeaderboard() {
   // Get all the users and their scores
   const users = await prisma.user.findMany({
     select: {
@@ -100,4 +98,6 @@ async function refreshLeaderboard() {
   await prisma.globalLeaderboard.createMany({
     data: leaderboardEntries,
   });
+
+  return leaderboardEntries;
 }

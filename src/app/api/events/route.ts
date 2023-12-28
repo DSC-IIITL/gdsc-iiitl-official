@@ -36,14 +36,7 @@ export async function getEvents({
  */
 export async function GET(request: NextRequest) {
   try {
-    const isAuthorized = checkAuth(
-      request,
-      (authData) => authData.role === "admin"
-    );
-
-    if (!isAuthorized) {
-      throw new Error("Unauthorized");
-    }
+    // PUBLIC ROUTE
 
     const cursor = request.nextUrl.searchParams.get("cursor") ?? undefined;
     const limit = parseInt(request.nextUrl.searchParams.get("limit") ?? "100");
@@ -75,29 +68,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export type GetEvent = Prisma.EventGetPayload<{
-  include: {
-    submissions: true;
-  };
-}>;
-
-export async function fetchEventById(
-  id: Prisma.EventWhereInput["id"]
-): Promise<GetEvent | null> {
-  const event = await prisma.event.findFirst({
-    where: {
-      id,
-    },
-    include: {
-      submissions: true,
-    },
-  });
-
-  return event;
-}
-
 /**
- * Returns the event with the given id
+ * Creates a new event
  */
 export async function POST(request: NextRequest) {
   try {
@@ -110,12 +82,15 @@ export async function POST(request: NextRequest) {
       throw new Error("Unauthorized");
     }
 
-    const req = await request.json();
-    if (req.id === undefined) throw new Error("id is required");
+    // Get the body
+    const body = await request.json();
 
-    const event = await fetchEventById(req.id);
+    const event = await prisma.event.create({
+      data: {
+        ...body,
+      },
+    });
 
-    if (event === null) throw new Error("Event not found");
     return NextResponse.json(
       generateMessage({
         message: "Success",

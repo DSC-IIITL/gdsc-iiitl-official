@@ -10,10 +10,11 @@ export function signToken(data: AuthData, options?: jwt.SignOptions) {
 }
 
 export function verifyToken(
-  token: string,
+  token: string | undefined,
   verify: (authData: AuthData) => boolean = () => true
 ): AuthData {
   if (JWT_SECRET === undefined) throw new Error("JWT_SECRET is undefined");
+  if (token === undefined) throw new Error("Token is undefined");
   const authData = jwt.verify(token, JWT_SECRET) as AuthData;
   if (!verify(authData)) throw new Error("Invalid auth data");
   return authData;
