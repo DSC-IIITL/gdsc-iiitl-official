@@ -1,5 +1,5 @@
 import Image from "next/image";
-import GDSCLogoImage from "../../public/gdsc.png";
+import GDSCLogoImage from "../../../public/gdsc.png";
 
 export default function GDSCLogo() {
   return (

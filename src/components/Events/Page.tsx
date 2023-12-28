@@ -2,14 +2,14 @@
 
 import { Box, Typography, Paper, Button, Divider } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { ContestResult } from "@/app/api/events/route";
+import { GetEvent } from "@/app/api/events/route";
 import { Delete as DeleteIcon, Sync as SyncIcon } from "@mui/icons-material";
 import { useFetch } from "@/hooks/useFetch";
 import { RefreshContestEntriesResponse } from "@/app/api/events/refresh/route";
 import ContestEntriesTable from "./atoms/ContestEntriesTable";
 
 export type EventPageProps = {
-  eventData: ContestResult;
+  eventData: GetEvent;
 };
 
 export default function EventPage({ eventData }: EventPageProps) {
@@ -62,7 +62,7 @@ export default function EventPage({ eventData }: EventPageProps) {
         </Button>
       </Box>
       <Paper>
-        {eventData.contestEntries?.map((entry) => {
+        {eventData.submissions?.map((entry) => {
           return (
             <LoadingButton
               key={entry.id}
@@ -72,7 +72,7 @@ export default function EventPage({ eventData }: EventPageProps) {
               color="primary"
               sx={{ width: "100%" }}
             >
-              {entry.studentId}
+              {entry.userId}
             </LoadingButton>
           );
         })}

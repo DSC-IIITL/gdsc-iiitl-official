@@ -2,14 +2,13 @@ import prisma from "@/lib/db/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { generateMessage, isValidBody } from "@/lib/server/response-utils";
-import { signToken } from "@/lib/server/auth-utils";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    if (!isValidBody(body, ["email", "password", "rememberMe"]))
+    if (!isValidBody(body, ["email", "password", "name"]))
       throw new Error("Invalid request");
-    const { email, password, rememberMe } = body;
+    const { email, password, name } = body;
 
     const admin = await prisma.admin.findUnique({
       where: {
@@ -35,52 +34,20 @@ export async function POST(request: Request) {
       data: {
         email,
         password: hashedPassword,
+        name,
       },
     });
 
-    // Successfully created the account -> Set cookies if rememberMe and redirect to dashboard
-    if (rememberMe === true) {
-      const token = signToken(
-        {
-          id: newAdmin.id,
+    // Return success message
+    return NextResponse.json(
+      generateMessage({
+        message: "Account created successfully",
+        data: {
           email: newAdmin.email,
-          role: "admin",
-          name: "",
         },
-        { expiresIn: "30d" }
-      );
-      return NextResponse.json(
-        generateMessage({
-          message: "Successfully created account",
-        }),
-        {
-          status: 200,
-          headers: {
-            "Set-Cookie": `token=${token}; Max-Age=${
-              60 * 60 * 24 * 30
-            }; Path=/; HttpOnly; SameSite=Lax`,
-          },
-        }
-      );
-    } else {
-      const token = signToken({
-        id: newAdmin.id,
-        email: newAdmin.email,
-        role: "admin",
-        name: "",
-      });
-      return NextResponse.json(
-        generateMessage({
-          message: "Successfully created account",
-        }),
-        {
-          status: 200,
-          headers: {
-            "Set-Cookie": `token=${token}; Path=/; HttpOnly; SameSite=Lax`,
-          },
-        }
-      );
-    }
+      }),
+      { status: 201 }
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(

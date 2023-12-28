@@ -12,13 +12,13 @@ export function generateMessage<T>({ message, data, error }: APIResponse<T>) {
   };
 }
 
-export function isValidBody(body: never, fields: string[]) {
+export function isValidBody(body: unknown, fields: string[]) {
   // TODO: Use Zod instead
-  if (body === undefined) {
+  if (typeof body !== "object" || body === null) {
     return false;
   }
   for (const field of fields) {
-    if (body[field] === undefined) {
+    if (Object.hasOwnProperty.call(body, field) === false) {
       return false;
     }
   }

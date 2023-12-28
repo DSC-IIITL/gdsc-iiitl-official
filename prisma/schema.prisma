@@ -10,45 +10,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Student {
-  id             String         @id @map("_id")
-  name           String
-  email          String         @unique
-  password       String
-  phoneNumber    String
-  contestEntries ContestEntry[]
-}
+model User {
+  id    String @id @map("_id") // Enrollment number
+  name  String
+  email String @unique
 
-model ContestEntry {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  student   Student  @relation(fields: [studentId], references: [id])
-  studentId String
-  contest   Contest  @relation(fields: [contestId], references: [id])
-  contestId String   @db.ObjectId
-  entry     Json
-  score     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  // Socials
+  github       String?
+  linkedin     String?
+  twitter      String?
+  website      String?
+  otherSocials String?
 
-model Contest {
-  id                String         @id @default(auto()) @map("_id") @db.ObjectId
-  name              String
-  description       String
-  startTime         DateTime
-  endTime           DateTime
-  duration          Float
-  contestEntries    ContestEntry[]
-  formLink          String
-  responseSheetLink String
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
+  // Events
+  submissions       EventSubmission[]
+  GlobalLeaderboard GlobalLeaderboard?
 }
 
 model Admin {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+}
+
+model Event {
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  venue       String
+  submissions EventSubmission[]
+}
+
+model EventSubmission {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  event   Event  @relation(fields: [eventId], references: [id])
+  eventId String @db.ObjectId
+
+  // Data
+  title          String
+  abstract       String
+  relatedLinks   String[]
+  submissionTime DateTime
+
+  // Scores
+  allotedScore            Int?
+  allotedScoreExplanation String?
+}
+
+// Table to cache the leaderboard
+model GlobalLeaderboard {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  lastUpdated DateTime
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @unique
+  score       Int
+  rank        Int
 }

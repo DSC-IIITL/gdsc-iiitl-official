@@ -5,9 +5,9 @@ import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 // TODO: Find a better way to handle api response types in Next.js
-export type ContestResults = Prisma.ContestGetPayload<Record<string, never>>[];
+export type GetEvents = Prisma.EventGetPayload<Record<string, never>>[];
 
-export async function fetchContests({
+export async function getEvents({
   cursor,
   limit,
   ord,
@@ -16,14 +16,14 @@ export async function fetchContests({
   limit?: number;
   ord?: "asc" | "desc";
 }) {
-  const contests = await prisma.contest.findMany({
+  const events = await prisma.event.findMany({
     take: limit,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
     orderBy: ord ? { id: ord } : undefined,
   });
 
-  return contests;
+  return events;
 }
 
 /**
@@ -52,12 +52,12 @@ export async function GET(request: NextRequest) {
       | "desc"
       | undefined;
 
-    const contests = await fetchContests({ cursor, limit, ord });
+    const events = await getEvents({ cursor, limit, ord });
 
     return NextResponse.json(
       generateMessage({
         message: "Success",
-        data: contests,
+        data: events,
       }),
       { status: 200 }
     );
@@ -75,25 +75,25 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export type ContestResult = Prisma.ContestGetPayload<{
+export type GetEvent = Prisma.EventGetPayload<{
   include: {
-    contestEntries: true;
+    submissions: true;
   };
 }>;
 
-export async function fetchContestById(
-  id: Prisma.ContestWhereInput["id"]
-): Promise<ContestResult | null> {
-  const contest = await prisma.contest.findFirst({
+export async function fetchEventById(
+  id: Prisma.EventWhereInput["id"]
+): Promise<GetEvent | null> {
+  const event = await prisma.event.findFirst({
     where: {
       id,
     },
     include: {
-      contestEntries: true,
+      submissions: true,
     },
   });
 
-  return contest;
+  return event;
 }
 
 /**
@@ -113,13 +113,13 @@ export async function POST(request: NextRequest) {
     const req = await request.json();
     if (req.id === undefined) throw new Error("id is required");
 
-    const contest = await fetchContestById(req.id);
+    const event = await fetchEventById(req.id);
 
-    if (contest === null) throw new Error("Contest not found");
+    if (event === null) throw new Error("Event not found");
     return NextResponse.json(
       generateMessage({
         message: "Success",
-        data: contest,
+        data: event,
       }),
       { status: 200 }
     );

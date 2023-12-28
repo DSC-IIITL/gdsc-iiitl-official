@@ -1,5 +1,5 @@
 import Image from "next/image";
-import GDSCBannerImage from "../../public/gdsc-banner.png";
+import GDSCBannerImage from "../../../public/gdsc-banner.png";
 
 export default function GDSCBanner() {
   return (
