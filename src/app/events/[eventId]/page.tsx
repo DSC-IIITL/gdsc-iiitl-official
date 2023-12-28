@@ -1,4 +1,5 @@
-import { fetchEventById } from "@/app/api/events/route";
+import { UnderConstruction } from "@/components/Construction";
+import prisma from "@/lib/db/prisma";
 import { notFound } from "next/navigation";
 
 export default async function EventPage({
@@ -6,9 +7,13 @@ export default async function EventPage({
 }: {
   params: { eventId: string };
 }) {
-  const eventData = await fetchEventById(params.eventId);
+  const eventData = await prisma.event.findUnique({
+    where: { id: params.eventId },
+  });
 
   if (!eventData) return notFound();
 
-  return <div>Event Page {eventData.name}</div>;
+  console.log({ eventData });
+
+  return <UnderConstruction />;
 }

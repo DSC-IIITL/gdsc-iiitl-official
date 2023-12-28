@@ -1,9 +1,9 @@
 import Layout from "./Layout";
-import EventPage from "./Page";
+// import EventPage from "./Page";
 
 const Events = {
   Layout: Layout,
-  Page: EventPage,
+  // Page: EventPage,
 };
 
 export default Events;

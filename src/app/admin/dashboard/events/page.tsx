@@ -1,5 +1,5 @@
-import Dashboard from "@/components/Dashboard";
+import { UnderConstruction } from "@/components/Construction";
 
 export default function DashboardEvents() {
-  return <Dashboard.Events />;
+  return <UnderConstruction />;
 }

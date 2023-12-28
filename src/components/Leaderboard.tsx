@@ -52,16 +52,6 @@ export default function Leaderboard({ data, pageSize = 10 }: LeaderboardProps) {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell
-                align="center"
-                sx={{
-                  color: "#FBBC05",
-                  fontSize: "1.2vw",
-                }}
-                key={"rank"}
-              >
-                Rank
-              </TableCell>
               {cols.map((col) => {
                 const color = getColor();
                 return (
