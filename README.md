@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GDSC Club Official Website 🌟
 
-## Getting Started
+Welcome to the official repository for the Google Developer Student Clubs (GDSC) website of IIITL 🎓. This repository is a dedicated platform that bridges theoretical knowledge with practical application, offering a comprehensive view of our club's activities and initiatives.
 
-First, run the development server:
+## Table of Contents 📚
+
+- [GDSC Club Official Website 🌟](#gdsc-club-official-website-)
+  - [Table of Contents 📚](#table-of-contents-)
+  - [Introduction 🌟](#introduction-)
+  - [Getting Started 🏁](#getting-started-)
+    - [Prerequisites 📋](#prerequisites-)
+    - [Setup 🛠️](#setup-️)
+    - [Running Locally 🖥️](#running-locally-️)
+  - [Contributing 🌱](#contributing-)
+  - [Wiki Pages 📖](#wiki-pages-)
+  - [License 📜](#license-)
+
+## Introduction 🌟
+
+The GDSC club at IIITL is committed to enhancing technical proficiency by providing a platform for hands-on experience and learning. This repository encapsulates the codebase and resources for our official website, ensuring transparency and collaboration among our members.
+
+## Getting Started 🏁
+
+To engage with this project, please follow the outlined steps:
+
+### Prerequisites 📋
+
+1. **Git**: Ensure you have Git installed on your local machine. If not, [download and install Git](https://git-scm.com/).
+2. **Node.js and npm**: The project utilizes Node.js and npm for package management. Install these tools from the [official Node.js website](https://nodejs.org/).
+
+### Setup 🛠️
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/DSC-IIITL/gdsc-iiitl-official.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd gdsc-iiitl-official
+   ```
+
+3. Install project dependencies:
+
+   ```bash
+   yarn
+   ```
+
+### Running Locally 🖥️
+
+Execute the following command to run the website locally:
 
 ```bash
-npm run dev
-# or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Access the website by navigating to `http://localhost` in your web browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> _Encountering issues?_ For assistance or troubleshooting, refer to our [wiki](/wiki) or [create an issue](https://github.com/DSC-IIITL/gdsc-iiitl-official/issues) for support.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Contributing 🌱
 
-## Learn More
+Your contributions are invaluable to us! To contribute effectively:
 
-To learn more about Next.js, take a look at the following resources:
+1. Fork this repository.
+2. Create a new branch: `git checkout -b feature/your-feature-name`.
+3. Implement your changes and commit them: `git commit -m 'Add some feature'`.
+4. Push your changes to the branch: `git push origin feature/your-feature-name`.
+5. Submit a pull request for review.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Ensure adherence to our [Contributing Guidelines](/CONTRIBUTING.md) and uphold our [Code of Conduct](/CODE_OF_CONDUCT.md) during your contributions.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Wiki Pages 📖
 
-## Deploy on Vercel
+For comprehensive documentation, guidelines, and resources, please visit our [Wiki Pages](https://github.com/DSC-IIITL/gdsc-iiitl-official/wiki).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License 📜
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the MIT License. For more details, refer to the [LICENSE](/LICENSE) file.
+
+We look forward to your contributions and collaboration!
