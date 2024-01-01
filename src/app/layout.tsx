@@ -1,10 +1,11 @@
 import * as React from "react";
 
 import ThemeRegistry from "@/components/ThemeRegistry/ThemeRegistry";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "GDSC Leaderboard",
-  description: "2023-24 Leaderboard for events by GDSC IIITL",
+export const metadata: Metadata = {
+  title: "GDSC IIITL",
+  description: "Welcome to the official website of GDSC IIIT Lucknow.",
 };
 
 export default function RootLayout({

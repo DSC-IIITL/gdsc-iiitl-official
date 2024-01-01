@@ -1,5 +1,11 @@
 import { UnderConstruction } from "@/components/Construction";
 import { getEvents } from "@/lib/events";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Events | GDSC IIITL",
+  description: "Explore the events conducted by GDSC IIIT Lucknow.",
+};
 
 export default async function EventsPage({
   searchParams,
