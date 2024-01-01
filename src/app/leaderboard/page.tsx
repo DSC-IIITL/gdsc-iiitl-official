@@ -3,6 +3,12 @@ import Box from "@mui/material/Box";
 import Leaderboard from "@/components/Leaderboard";
 import GDSCHeader from "@/components/Logos/GDSCHeader";
 import getLeaderboardData from "@/lib/leaderboard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Leaderboard | GDSC IIITL",
+  description: "Leaderboard for GDSC IIIT Lucknow.",
+};
 
 export default async function HomePage() {
   const leaderboardData = await getLeaderboardData();

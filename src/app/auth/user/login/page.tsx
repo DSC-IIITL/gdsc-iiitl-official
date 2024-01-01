@@ -2,6 +2,12 @@ import { verifyToken } from "@/lib/server/auth-utils";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Script from "next/script";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "User Login | GDSC IIITL",
+  description: "Login to GDSC IIIT Lucknow.",
+};
 
 export default function UserLogin() {
   const token = cookies().get("token")?.value;
