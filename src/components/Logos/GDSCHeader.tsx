@@ -1,10 +1,21 @@
-import { Box } from "@mui/material";
+"use client";
+
+import { Box, SxProps, Theme, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import GDSCLogo from "./GDSCLogo";
 
-export default function GDSCHeader() {
+export default function GDSCHeader({
+  sx,
+}: {
+  sx?: SxProps<Theme> | undefined;
+}) {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <Box
-      style={{
+      sx={{
+        ...sx,
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
@@ -14,7 +25,10 @@ export default function GDSCHeader() {
         gap: "2.5rem",
       }}
     >
-      <GDSCLogo />
+      <GDSCLogo
+        height={matches ? 64 : undefined}
+        width={matches ? 64 : undefined}
+      />
       <Box
         sx={{
           display: "flex",
@@ -23,8 +37,17 @@ export default function GDSCHeader() {
           alignItems: "flex-start",
         }}
       >
-        <h1 style={{ margin: 0 }}>Leaderboard 2023-24</h1>
-        <h3 style={{ margin: 0, opacity: 0.9 }}>GDSC IIITL</h3>
+        {matches ? (
+          <>
+            <h3 style={{ margin: 0 }}>Leaderboard 2023-24</h3>
+            <h5 style={{ margin: 0, opacity: 0.9 }}>GDSC IIITL</h5>
+          </>
+        ) : (
+          <>
+            <h1 style={{ margin: 0 }}>Leaderboard 2023-24</h1>
+            <h3 style={{ margin: 0, opacity: 0.9 }}>GDSC IIITL</h3>
+          </>
+        )}
       </Box>
     </Box>
   );

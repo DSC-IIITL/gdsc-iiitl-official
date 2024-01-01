@@ -16,19 +16,25 @@ export default async function HomePage() {
   return (
     <Box
       sx={{
-        display: "grid",
-        width: "80%",
-        height: "80%",
-        gridTemplateRows: "auto 1fr",
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        gap: "2rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "2.5rem",
+        padding: "2rem",
       }}
     >
-      <GDSCHeader />
-      <Leaderboard data={leaderboardData} />
+      <GDSCHeader
+        sx={{
+          margin: "auto",
+        }}
+      />
+      <Leaderboard
+        sx={{
+          maxWidth: "1440px",
+          margin: "auto",
+          minHeight: `640px`, // TODO: Remove this hardcoding for 10 rows
+        }}
+        data={leaderboardData}
+      />
     </Box>
   );
 }
