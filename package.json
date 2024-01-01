@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "next dev -p 80",
     "build": "prisma generate & next build",
-    "start": "next start",
+    "start": "next start -p 80",
     "lint": "next lint",
     "start:prisma": "dotenv -e .env.local -- yarn prisma studio",
     "format": "prettier --write src/",
