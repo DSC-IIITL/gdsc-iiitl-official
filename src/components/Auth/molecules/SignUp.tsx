@@ -153,7 +153,7 @@ export default function SignIn() {
           >
             Sign Up
           </LoadingButton>
-          <Grid container gap={"0.25rem"}>
+          <Grid container gap={"0.25rem"} alignItems={"center"}>
             {"Already have an account?"}
             <Link href="/auth/admin/signin" variant="body2">
               {"Sign In"}

@@ -15,8 +15,7 @@ export default function GDSCBanner() {
         src={GDSCBannerImage}
         alt="GDSC Logo"
         style={{ borderRadius: "4rem", userSelect: "none" }}
-        width={250}
-        height={250}
+        width={400}
       />
     );
 
