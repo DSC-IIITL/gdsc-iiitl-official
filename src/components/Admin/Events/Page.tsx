@@ -83,7 +83,7 @@ export default function EventsPage(props: EventsPageProps) {
     fetch(
       `/api/events?limit=${props.limit}&skip=${
         (props.page - 1) * props.limit
-      }&order=${props.order}`,
+      }&ord=${props.order}`,
       {
         headers: {
           "Content-Type": "application/json",
