@@ -1,5 +1,5 @@
 import prisma from "@/lib/db/prisma";
-import { checkAuth, verifyToken } from "@/lib/server/auth-utils";
+import { checkAuth, getAuthData } from "@/lib/server/auth-utils";
 import { generateMessage } from "@/lib/server/response-utils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -38,7 +38,7 @@ export async function POST(
       throw new Error("Unauthorized");
     }
 
-    const tokenData = verifyToken(request.cookies.get("token")?.value);
+    const tokenData = getAuthData(request.cookies.get("token")?.value);
 
     const body = sanitizeBody(await request.json());
 
@@ -103,7 +103,7 @@ export async function PUT(
       throw new Error("Unauthorized");
     }
 
-    const tokenData = verifyToken(request.cookies.get("token")?.value);
+    const tokenData = getAuthData(request.cookies.get("token")?.value);
 
     const body = sanitizeBody(await request.json());
 

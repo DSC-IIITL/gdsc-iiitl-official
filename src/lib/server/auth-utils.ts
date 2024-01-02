@@ -10,13 +10,17 @@ export function signToken(data: AuthData, options?: jwt.SignOptions) {
 }
 
 export function verifyToken(
-  token: string | undefined,
+  token: string,
   verify: (authData: AuthData) => boolean = () => true
-): AuthData {
+) {
+  const authData = getAuthData(token);
+  return verify(authData);
+}
+
+export function getAuthData(token: string | undefined): AuthData {
   if (JWT_SECRET === undefined) throw new Error("JWT_SECRET is undefined");
   if (token === undefined) throw new Error("Token is undefined");
   const authData = jwt.verify(token, JWT_SECRET) as AuthData;
-  if (!verify(authData)) throw new Error("Invalid auth data");
   return authData;
 }
 
@@ -26,6 +30,6 @@ export function checkAuth(
 ) {
   const token = request.cookies.get("token")?.value;
   if (token === undefined) return false;
-  const authData = verifyToken(token);
+  const authData = getAuthData(token);
   return callback(authData);
 }

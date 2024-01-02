@@ -1,4 +1,4 @@
-import { verifyToken } from "@/lib/server/auth-utils";
+import { getAuthData } from "@/lib/server/auth-utils";
 import { generateMessage } from "@/lib/server/response-utils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
         { status: 200 }
       );
 
-    const verifiedToken = verifyToken(token);
+    const verifiedToken = getAuthData(token);
     return NextResponse.json(
       generateMessage({
         message: "Successfully authenticated",
