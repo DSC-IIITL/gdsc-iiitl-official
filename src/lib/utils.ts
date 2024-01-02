@@ -1,6 +1,9 @@
 // Example usage:
 // const prismaDateString = "2023-09-28T14:30:00.000Z";
 // const formattedDate = formatPrismaDateForUI(prismaDateString);
+
+import { ReadonlyURLSearchParams } from "next/navigation";
+
 // console.log(formattedDate); // Output: "Sep 28, 2023, 2:30:00 PM"
 export function formatDate(dateString: string | Date): string {
   let date = dateString;
@@ -59,4 +62,15 @@ export function extractEnrollmentNumber(email: string) {
     throw new Error("Invalid email");
   }
   return enrollmentNumber;
+}
+
+export function createQueryString(
+  searchParams: ReadonlyURLSearchParams,
+  params: Record<string, string>
+) {
+  const newSearchParams = new URLSearchParams(searchParams);
+  for (const [key, value] of Object.entries(params)) {
+    newSearchParams.set(key, value);
+  }
+  return newSearchParams.toString();
 }
