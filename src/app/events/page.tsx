@@ -1,5 +1,4 @@
-import { UnderConstruction } from "@/components/Construction";
-import { getEvents } from "@/lib/events";
+import AdminEvents from "@/components/Admin/Events";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,21 +9,30 @@ export const metadata: Metadata = {
 export default async function EventsPage({
   searchParams,
 }: {
-  searchParams: { cursor?: string; limit?: string; sort?: string };
+  searchParams: { page?: string; sort?: string };
 }) {
-  // Fetch all the events with pagination enabled
-  const cursor = searchParams.cursor ?? undefined;
-  const limit = parseInt(searchParams.limit ?? "10");
-  const sort = (() => {
-    const param = searchParams.sort;
-    if (param === "asc" || param === "desc") return param;
-    else return undefined;
-  })();
-  const events = await getEvents({ cursor, limit, ord: sort });
-
-  console.log({ events });
-
-  return <UnderConstruction />;
+  return (
+    <AdminEvents.Page
+      limit={10}
+      order={(() => {
+        if (searchParams.sort === "desc") {
+          return "desc";
+        } else {
+          return "asc";
+        }
+      })()}
+      page={(() => {
+        try {
+          if (!searchParams.page) {
+            return 1;
+          }
+          return parseInt(searchParams.page);
+        } catch (err) {
+          return 1;
+        }
+      })()}
+    />
+  );
 }
 
 // Opt out of caching for all data requests in the route segment

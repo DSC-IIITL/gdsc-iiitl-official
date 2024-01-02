@@ -77,6 +77,7 @@ export async function PUT(
 
   // Get the body
   const body = await request.json();
+  delete body.id;
 
   try {
     const isAuthorized = checkAuth(

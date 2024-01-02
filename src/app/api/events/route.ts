@@ -1,5 +1,5 @@
 import prisma from "@/lib/db/prisma";
-import { getEvents } from "@/lib/events";
+import { getEventsByCursor, getEventsByOffset } from "@/lib/events";
 import { checkAuth } from "@/lib/server/auth-utils";
 import { generateMessage } from "@/lib/server/response-utils";
 import { Prisma } from "@prisma/client";
@@ -21,13 +21,15 @@ export async function GET(request: NextRequest) {
     // PUBLIC ROUTE
 
     const cursor = request.nextUrl.searchParams.get("cursor") ?? undefined;
+    const skip = parseInt(request.nextUrl.searchParams.get("skip") ?? "0");
     const limit = parseInt(request.nextUrl.searchParams.get("limit") ?? "100");
-    const ord = (request.nextUrl.searchParams.get("ord") ?? undefined) as
+    const ord = (request.nextUrl.searchParams.get("ord") ?? "desc") as
       | "asc"
-      | "desc"
-      | undefined;
+      | "desc";
 
-    const events = await getEvents({ cursor, limit, ord });
+    const events = cursor
+      ? await getEventsByCursor({ cursor, limit, ord })
+      : await getEventsByOffset({ offset: skip, limit, ord });
 
     return NextResponse.json(
       generateMessage({
