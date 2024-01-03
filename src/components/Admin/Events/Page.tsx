@@ -9,17 +9,18 @@ import {
   Fab,
   Grid,
   Skeleton,
-  Snackbar,
   Stack,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { Prisma } from "@prisma/client";
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import EventGrid from "./EventGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createQueryString } from "@/lib/utils";
 import { getAxios } from "@/lib/axios.config";
 import Forms from "@/components/Forms";
+import { EventsContext } from "@/contexts/EventsContext";
+import toast, { Toaster } from "react-hot-toast";
 
 export type EventsPageProps = {
   limit: number;
@@ -27,40 +28,12 @@ export type EventsPageProps = {
   order: Prisma.SortOrder;
 };
 
-export const EventsContext = createContext<{
-  deleteEvent: (
-    id: Prisma.EventGetPayload<Record<string, never>>["id"]
-  ) => Promise<void>;
-  updateEvent: (
-    id: Prisma.EventGetPayload<Record<string, never>>["id"],
-    data: Partial<Prisma.EventGetPayload<Record<string, never>>>
-  ) => Promise<void>;
-  createEvent: (
-    data: Prisma.EventGetPayload<Record<string, never>>
-  ) => Promise<void>;
-  refresh: () => Promise<void>;
-}>({
-  deleteEvent: async () => {},
-  updateEvent: async () => {},
-  createEvent: async () => {},
-  refresh: async () => {},
-});
-
 export default function EventsPage(props: EventsPageProps) {
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<
     Prisma.EventGetPayload<Record<string, never>>[]
   >([]);
   const [newEventOpen, setNewEventOpen] = useState(false);
-  const [snackbarState, setSnackbarState] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "info" | "warning" | "error" | undefined;
-  }>({
-    open: false,
-    message: "",
-    severity: undefined,
-  });
 
   const router = useRouter();
   const pathName = usePathname();
@@ -76,11 +49,7 @@ export default function EventsPage(props: EventsPageProps) {
       });
       const updatedEvent = res.data.data;
       console.log({ updatedEvent });
-      setSnackbarState({
-        open: true,
-        message: "Updated event successfully",
-        severity: "success",
-      });
+      toast.success("Updated event successfully");
       // Set the events to the updated events
       setEvents((events) =>
         events.map((event) => {
@@ -91,11 +60,7 @@ export default function EventsPage(props: EventsPageProps) {
         })
       );
     } catch (err) {
-      setSnackbarState({
-        open: true,
-        message: "Unable to update event",
-        severity: "error",
-      });
+      toast.error("Unable to update event");
       console.error(err);
     }
   };
@@ -105,19 +70,11 @@ export default function EventsPage(props: EventsPageProps) {
       const res = await getAxios().delete(`/events/${data}`);
       const deletedEvent = res.data.data;
       console.log({ deletedEvent });
-      setSnackbarState({
-        open: true,
-        message: "Deleted event successfully",
-        severity: "success",
-      });
+      toast.success("Deleted event successfully");
       // Set the events to the updated events
       setEvents((events) => events.filter((event) => event.id !== data));
     } catch (err) {
-      setSnackbarState({
-        open: true,
-        message: "Unable to delete event",
-        severity: "error",
-      });
+      toast.error("Unable to delete event");
       console.error(err);
     }
   };
@@ -129,19 +86,11 @@ export default function EventsPage(props: EventsPageProps) {
       });
       const createdEvent = res.data.data;
       console.log({ createdEvent });
-      setSnackbarState({
-        open: true,
-        message: "Created event successfully",
-        severity: "success",
-      });
+      toast.success("Created event successfully");
       // Set the events to the updated events
       setEvents((events) => [...events, createdEvent]);
     } catch (err) {
-      setSnackbarState({
-        open: true,
-        message: "Unable to create event",
-        severity: "error",
-      });
+      toast.error("Unable to create event");
       console.error(err);
     }
   };
@@ -179,102 +128,99 @@ export default function EventsPage(props: EventsPageProps) {
 
   // Fetch the events from the API
   return (
-    <EventsContext.Provider
-      value={{
-        deleteEvent: handleDelete,
-        updateEvent: handleUpdate,
-        createEvent: handleCreate,
-        refresh: async () => {
-          router.push(
-            pathName +
-              "?" +
-              createQueryString(searchParams, {
-                page: props.page.toString(),
-              })
-          );
-        },
-      }}
-    >
-      <Snackbar
-        open={snackbarState.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarState({ ...snackbarState, open: false })}
-        message={snackbarState.message}
-      />
-      {loading ? (
-        <EventGridSkeleton />
-      ) : (
-        <>
-          <EventGrid events={events} />
-          <ButtonGroup variant="outlined" aria-label="Pagination Buttons">
-            <Button
-              disabled={props.page <= 1}
-              onClick={() =>
-                router.push(
-                  pathName +
-                    "?" +
-                    createQueryString(searchParams, {
-                      page: (props.page - 1).toString(),
-                    })
-                )
-              }
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={() =>
-                router.push(
-                  pathName +
-                    "?" +
-                    createQueryString(searchParams, {
-                      page: (props.page + 1).toString(),
-                    })
-                )
-              }
-              disabled={events.length < props.limit}
-            >
-              Next
-            </Button>
-          </ButtonGroup>
-        </>
-      )}
-      <Fab
-        color="primary"
-        aria-label="add"
-        sx={{
-          position: "fixed",
-          bottom: "2rem",
-          right: "clamp(2rem, 5vw, 5rem)",
-        }}
-        onClick={() => setNewEventOpen((newEventOpen) => !newEventOpen)}
-      >
-        <AddIcon />
-      </Fab>
-      <Dialog
-        onClose={() => setNewEventOpen(false)}
-        open={newEventOpen}
-        sx={{
-          h2: {
-            padding: "0",
-          },
-          ".MuiPaper-root": {
-            padding: "16px 24px",
+    <>
+      <Toaster position="top-center" />
+      <EventsContext.Provider
+        value={{
+          deleteEvent: handleDelete,
+          updateEvent: handleUpdate,
+          createEvent: handleCreate,
+          refresh: async () => {
+            router.push(
+              pathName +
+                "?" +
+                createQueryString(searchParams, {
+                  page: props.page.toString(),
+                })
+            );
           },
         }}
       >
-        <Stack gap={"24px"}>
-          <DialogTitle>Create Event</DialogTitle>
-          <Forms.Event
-            close={() => setNewEventOpen(false)}
-            mode="create"
-            onCreate={async (data) => {
-              await handleCreate(data);
-            }}
-            closeOnSubmit={true}
-          />
-        </Stack>
-      </Dialog>
-    </EventsContext.Provider>
+        {loading ? (
+          <EventGridSkeleton />
+        ) : (
+          <>
+            <EventGrid events={events} />
+            <ButtonGroup variant="outlined" aria-label="Pagination Buttons">
+              <Button
+                disabled={props.page <= 1}
+                onClick={() =>
+                  router.push(
+                    pathName +
+                      "?" +
+                      createQueryString(searchParams, {
+                        page: (props.page - 1).toString(),
+                      })
+                  )
+                }
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push(
+                    pathName +
+                      "?" +
+                      createQueryString(searchParams, {
+                        page: (props.page + 1).toString(),
+                      })
+                  )
+                }
+                disabled={events.length < props.limit}
+              >
+                Next
+              </Button>
+            </ButtonGroup>
+          </>
+        )}
+        <Fab
+          color="primary"
+          aria-label="add"
+          sx={{
+            position: "fixed",
+            bottom: "2rem",
+            right: "clamp(2rem, 5vw, 5rem)",
+          }}
+          onClick={() => setNewEventOpen((newEventOpen) => !newEventOpen)}
+        >
+          <AddIcon />
+        </Fab>
+        <Dialog
+          onClose={() => setNewEventOpen(false)}
+          open={newEventOpen}
+          sx={{
+            h2: {
+              padding: "0",
+            },
+            ".MuiPaper-root": {
+              padding: "16px 24px",
+            },
+          }}
+        >
+          <Stack gap={"24px"}>
+            <DialogTitle>Create Event</DialogTitle>
+            <Forms.Event
+              close={() => setNewEventOpen(false)}
+              mode="create"
+              onCreate={async (data) => {
+                await handleCreate(data);
+              }}
+              closeOnSubmit={true}
+            />
+          </Stack>
+        </Dialog>
+      </EventsContext.Provider>
+    </>
   );
 }
 
