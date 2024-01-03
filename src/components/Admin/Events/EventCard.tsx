@@ -1,4 +1,5 @@
 import Forms from "@/components/Forms";
+import { EventsContext } from "@/contexts/EventsContext";
 import {
   Button,
   Card,
@@ -12,7 +13,6 @@ import {
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
-import { EventsContext } from "./Page";
 
 export type EventCardProps = Prisma.EventGetPayload<Record<string, never>>;
 
@@ -66,6 +66,7 @@ export default function EventCard(props: EventCardProps) {
             eventData={{ ...props }}
             onEdit={(data) => updateEvent(data.id, data)}
             onDelete={(id) => deleteEvent(id)}
+            mode="viewedit"
           />
         </Stack>
       </Dialog>

@@ -28,8 +28,8 @@ export type EventCreateProps = {
   closeOnSubmit?: boolean;
 };
 
-export type EventUpdateProps = Omit<EventCreateProps, "mode"> & {
-  mode: "edit" | "view";
+export type EventUpdateProps = Omit<EventCreateProps, "mode" | "onCreate"> & {
+  mode: "viewedit";
   eventData: Partial<EventType> & { id: EventType["id"] };
   onEdit?: (data: EventType) => Promise<void>;
   onDelete?: (data: EventType["id"]) => Promise<void>;
