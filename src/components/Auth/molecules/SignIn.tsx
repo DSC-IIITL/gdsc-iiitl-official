@@ -43,7 +43,7 @@ export default function SignIn() {
         body: JSON.stringify({
           email: data.get("email"),
           password: data.get("password"),
-          rememberMe: data.get("remember"),
+          rememberMe: data.get("remember") === "remember" ? true : false,
         }),
       });
       if (response.ok === false) {
@@ -115,6 +115,7 @@ export default function SignIn() {
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
+            name="remember"
           />
           <LoadingButton
             type="submit"
