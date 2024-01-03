@@ -1,12 +1,25 @@
 "use client";
 
-import { Box, Button, ButtonGroup, Grid, Skeleton } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Dialog,
+  DialogTitle,
+  Fab,
+  Grid,
+  Skeleton,
+  Snackbar,
+  Stack,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { Prisma } from "@prisma/client";
 import { createContext, useEffect, useState } from "react";
 import EventGrid from "./EventGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createQueryString } from "@/lib/utils";
 import { getAxios } from "@/lib/axios.config";
+import Forms from "@/components/Forms";
 
 export type EventsPageProps = {
   limit: number;
@@ -22,10 +35,14 @@ export const EventsContext = createContext<{
     id: Prisma.EventGetPayload<Record<string, never>>["id"],
     data: Partial<Prisma.EventGetPayload<Record<string, never>>>
   ) => Promise<void>;
+  createEvent: (
+    data: Prisma.EventGetPayload<Record<string, never>>
+  ) => Promise<void>;
   refresh: () => Promise<void>;
 }>({
   deleteEvent: async () => {},
   updateEvent: async () => {},
+  createEvent: async () => {},
   refresh: async () => {},
 });
 
@@ -34,14 +51,24 @@ export default function EventsPage(props: EventsPageProps) {
   const [events, setEvents] = useState<
     Prisma.EventGetPayload<Record<string, never>>[]
   >([]);
+  const [newEventOpen, setNewEventOpen] = useState(false);
+  const [snackbarState, setSnackbarState] = useState<{
+    open: boolean;
+    message: string;
+    severity: "success" | "info" | "warning" | "error" | undefined;
+  }>({
+    open: false,
+    message: "",
+    severity: undefined,
+  });
 
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
 
   const handleUpdate = async (
-    id: Prisma.EventGetPayload<Record<string, never>>["id"],
-    data: Partial<Prisma.EventGetPayload<Record<string, never>>>
+    id: Prisma.EventDeleteArgs["where"]["id"],
+    data: Prisma.EventUpdateInput
   ) => {
     try {
       const res = await getAxios().put(`/events/${id}`, {
@@ -49,6 +76,11 @@ export default function EventsPage(props: EventsPageProps) {
       });
       const updatedEvent = res.data.data;
       console.log({ updatedEvent });
+      setSnackbarState({
+        open: true,
+        message: "Updated event successfully",
+        severity: "success",
+      });
       // Set the events to the updated events
       setEvents((events) =>
         events.map((event) => {
@@ -59,24 +91,60 @@ export default function EventsPage(props: EventsPageProps) {
         })
       );
     } catch (err) {
+      setSnackbarState({
+        open: true,
+        message: "Unable to update event",
+        severity: "error",
+      });
       console.error(err);
     }
   };
 
-  const handleDelete = async (
-    data: Prisma.EventGetPayload<Record<string, never>>["id"]
-  ) => {
+  const handleDelete = async (data: Prisma.EventDeleteArgs["where"]["id"]) => {
     try {
       const res = await getAxios().delete(`/events/${data}`);
       const deletedEvent = res.data.data;
       console.log({ deletedEvent });
+      setSnackbarState({
+        open: true,
+        message: "Deleted event successfully",
+        severity: "success",
+      });
       // Set the events to the updated events
       setEvents((events) => events.filter((event) => event.id !== data));
     } catch (err) {
+      setSnackbarState({
+        open: true,
+        message: "Unable to delete event",
+        severity: "error",
+      });
       console.error(err);
     }
   };
 
+  const handleCreate = async (data: Prisma.EventCreateInput) => {
+    try {
+      const res = await getAxios().post(`/events`, {
+        ...data,
+      });
+      const createdEvent = res.data.data;
+      console.log({ createdEvent });
+      setSnackbarState({
+        open: true,
+        message: "Created event successfully",
+        severity: "success",
+      });
+      // Set the events to the updated events
+      setEvents((events) => [...events, createdEvent]);
+    } catch (err) {
+      setSnackbarState({
+        open: true,
+        message: "Unable to create event",
+        severity: "error",
+      });
+      console.error(err);
+    }
+  };
   useEffect(() => {
     // Fetch the events from the API
     setLoading(true);
@@ -115,6 +183,7 @@ export default function EventsPage(props: EventsPageProps) {
       value={{
         deleteEvent: handleDelete,
         updateEvent: handleUpdate,
+        createEvent: handleCreate,
         refresh: async () => {
           router.push(
             pathName +
@@ -126,6 +195,12 @@ export default function EventsPage(props: EventsPageProps) {
         },
       }}
     >
+      <Snackbar
+        open={snackbarState.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarState({ ...snackbarState, open: false })}
+        message={snackbarState.message}
+      />
       {loading ? (
         <EventGridSkeleton />
       ) : (
@@ -163,6 +238,42 @@ export default function EventsPage(props: EventsPageProps) {
           </ButtonGroup>
         </>
       )}
+      <Fab
+        color="primary"
+        aria-label="add"
+        sx={{
+          position: "fixed",
+          bottom: "2rem",
+          right: "clamp(2rem, 5vw, 5rem)",
+        }}
+        onClick={() => setNewEventOpen((newEventOpen) => !newEventOpen)}
+      >
+        <AddIcon />
+      </Fab>
+      <Dialog
+        onClose={() => setNewEventOpen(false)}
+        open={newEventOpen}
+        sx={{
+          h2: {
+            padding: "0",
+          },
+          ".MuiPaper-root": {
+            padding: "16px 24px",
+          },
+        }}
+      >
+        <Stack gap={"24px"}>
+          <DialogTitle>Create Event</DialogTitle>
+          <Forms.Event
+            close={() => setNewEventOpen(false)}
+            mode="create"
+            onCreate={async (data) => {
+              await handleCreate(data);
+            }}
+            closeOnSubmit={true}
+          />
+        </Stack>
+      </Dialog>
     </EventsContext.Provider>
   );
 }
