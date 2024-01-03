@@ -1,6 +1,6 @@
 import EventForm from "./Event";
 
-export type FormMode = "view" | "edit";
+export type FormMode = "view" | "edit" | "create";
 
 const Forms = {
   Event: EventForm,
