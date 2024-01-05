@@ -26,10 +26,11 @@ export async function GET(request: NextRequest) {
     const ord = (request.nextUrl.searchParams.get("ord") ?? "desc") as
       | "asc"
       | "desc";
+    const q = request.nextUrl.searchParams.get("q") ?? undefined;
 
     const events = cursor
-      ? await getEventsByCursor({ cursor, limit, ord })
-      : await getEventsByOffset({ offset: skip, limit, ord });
+      ? await getEventsByCursor({ cursor, limit, ord, q })
+      : await getEventsByOffset({ offset: skip, limit, ord, q });
 
     return NextResponse.json(
       generateMessage({

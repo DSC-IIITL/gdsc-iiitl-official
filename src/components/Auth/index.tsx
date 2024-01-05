@@ -1,9 +1,11 @@
-import SignUp from "./molecules/SignUp";
-import SignIn from "./molecules/SignIn";
+import SignUp from "./SignUp";
+import SignIn from "./SignIn";
+import Login from "./Login";
 
-const SignInPage = {
+const AuthPage = {
   SignIn: SignIn,
   SignUp: SignUp,
+  Login: Login,
 };
 
-export default SignInPage;
+export default AuthPage;

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function UserLogin() {
   const token = cookies().get("token")?.value;
   if (token && verifyToken(token, (auth) => auth.role === "user"))
-    redirect("/user/dashboard");
+    redirect("/user");
 
   const BASE_URL = process.env["BASE_URL"] ?? "http://localhost";
 

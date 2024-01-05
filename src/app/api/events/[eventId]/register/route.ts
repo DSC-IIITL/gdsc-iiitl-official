@@ -21,6 +21,7 @@ function sanitizeBody(body: any) {
   delete body.event;
   delete body.eventId;
   delete body.submissionTime;
+  delete body.id;
   return body;
 }
 
@@ -65,6 +66,15 @@ export async function POST(
           },
         },
         submissionTime: new Date().toISOString(),
+      },
+      include: {
+        event: {
+          select: {
+            id: true,
+            name: true,
+            endDate: true,
+          },
+        },
       },
     });
 
@@ -124,6 +134,77 @@ export async function PUT(
       data: {
         ...body,
         submissionTime: new Date().toISOString(),
+      },
+      include: {
+        event: {
+          select: {
+            id: true,
+            name: true,
+            endDate: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      generateMessage({
+        message: "Success",
+        data: eventSubmission,
+      }),
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      generateMessage({
+        message: err instanceof Error ? err.message : "Something went wrong",
+        error: err instanceof Error ? err.message : "unknown",
+      }),
+      {
+        status: err instanceof Error ? 401 : 500,
+      }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { eventId: string } }
+) {
+  try {
+    const isAuthorized = checkAuth(
+      request,
+      (authData) => authData.role === "user"
+    );
+
+    if (!isAuthorized) {
+      throw new Error("Unauthorized");
+    }
+
+    const tokenData = getAuthData(request.cookies.get("token")?.value);
+
+    // Check if there is an earlier submission
+    const earlierSubmission = await getSubmission(params.eventId, tokenData.id);
+
+    if (earlierSubmission === null) {
+      throw new Error(
+        "No earlier submission found. To create a new submission, use the POST method instead."
+      );
+    }
+
+    // Delete the submission
+    const eventSubmission = await prisma.eventSubmission.delete({
+      where: {
+        id: earlierSubmission.id,
+      },
+      include: {
+        event: {
+          select: {
+            id: true,
+            name: true,
+            endDate: true,
+          },
+        },
       },
     });
 
