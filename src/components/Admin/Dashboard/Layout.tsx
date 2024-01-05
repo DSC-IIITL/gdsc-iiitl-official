@@ -80,31 +80,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathName = usePathname();
 
-  const matchedSidebarEl = (() => {
-    if (pathName.includes("events")) return "events";
-    return "dashboard";
-  })();
-
-  const mainListItems = generateListItems([
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      buttonProps: {
-        selected: matchedSidebarEl === "dashboard",
-        onClick: () => router.push("/admin"),
+  const mainListItems = generateListItems(
+    [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        url: "/admin",
+        icon: <DashboardIcon />,
       },
-      icon: <DashboardIcon />,
-    },
-    {
-      id: "events",
-      label: "Events",
-      buttonProps: {
-        selected: matchedSidebarEl === "events",
-        onClick: () => router.push("/admin/events"),
+      {
+        id: "events",
+        label: "Events",
+        url: "/admin/events",
+        icon: <ListAltIcon />,
       },
-      icon: <ListAltIcon />,
-    },
-  ]);
+    ],
+    router,
+    pathName
+  );
 
   return (
     <html lang="en">

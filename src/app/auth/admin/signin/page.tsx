@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   const token = cookies().get("token")?.value;
   if (token && verifyToken(token, (auth) => auth.role === "admin"))
-    redirect("/admin/dashboard");
+    redirect("/admin");
 
   return <Auth.SignIn />;
 }

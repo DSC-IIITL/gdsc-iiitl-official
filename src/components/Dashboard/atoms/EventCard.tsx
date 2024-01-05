@@ -70,7 +70,7 @@ export default function EventCard({
               color: "inherit",
               textDecoration: "none",
             }}
-            href={`/admin/dashboard/events/${id}`}
+            href={`/admin/events/${id}`}
           >
             {eventTitle}
           </NextLink>
@@ -140,7 +140,7 @@ export default function EventCard({
             color: "inherit",
             textDecoration: "none",
           }}
-          href={`/admin/dashboard/events/${id}`}
+          href={`/admin/events/${id}`}
         >
           <IconButton size="small">
             <LaunchIcon />

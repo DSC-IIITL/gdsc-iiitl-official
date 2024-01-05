@@ -1,29 +1,18 @@
-import Forms from "@/components/Forms";
-import { EventsContext } from "@/contexts/EventsContext";
 import {
   Button,
   Card,
   CardActions,
   CardContent,
-  Dialog,
-  DialogTitle,
-  Stack,
   Typography,
 } from "@mui/material";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
-import { useContext, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export type EventCardProps = Prisma.EventGetPayload<Record<string, never>>;
 
 export default function EventCard(props: EventCardProps) {
-  const [open, setOpen] = useState(false);
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const { deleteEvent, updateEvent } = useContext(EventsContext);
+  const router = useRouter();
 
   return (
     <>
@@ -42,34 +31,14 @@ export default function EventCard(props: EventCardProps) {
           <Typography variant="body2">{props.description}</Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" onClick={() => setOpen(true)}>
-            More
+          <Button
+            size="small"
+            onClick={() => router.push("/user/submissions?new=true")}
+          >
+            Submit
           </Button>
         </CardActions>
       </Card>
-      <Dialog
-        onClose={handleClose}
-        open={open}
-        sx={{
-          h2: {
-            padding: "0",
-          },
-          ".MuiPaper-root": {
-            padding: "16px 24px",
-          },
-        }}
-      >
-        <Stack gap={"24px"}>
-          <DialogTitle>{props.name}</DialogTitle>
-          <Forms.Event
-            close={() => handleClose()}
-            eventData={{ ...props }}
-            mode="edit"
-            onEdit={(data) => updateEvent(data.id, data)}
-            onDelete={(id) => deleteEvent(id)}
-          />
-        </Stack>
-      </Dialog>
     </>
   );
 }

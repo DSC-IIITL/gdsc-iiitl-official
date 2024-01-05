@@ -1,14 +1,14 @@
 import React from "react";
-import Dashboard from "@/components/Dashboard";
 import { verifyToken } from "@/lib/server/auth-utils";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import AdminDashboard from "@/components/Admin/Dashboard";
 
 // PROTECTED ROUTES
 
 export const metadata: Metadata = {
-  title: "User Dashboard | GDSC IIITL",
+  title: "Dashboard | GDSC IIITL",
 };
 
 export default async function Layout({
@@ -17,13 +17,13 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const token = cookies().get("token")?.value;
-  if (!token || !verifyToken(token, (auth) => auth.role === "user"))
-    redirect("/auth/user/login");
+  if (!token || !verifyToken(token, (auth) => auth.role === "admin"))
+    redirect("/auth/admin/signin");
 
   return (
     <html lang="en">
       <body>
-        <Dashboard.Layout>{children}</Dashboard.Layout>
+        <AdminDashboard.Layout>{children}</AdminDashboard.Layout>
       </body>
     </html>
   );

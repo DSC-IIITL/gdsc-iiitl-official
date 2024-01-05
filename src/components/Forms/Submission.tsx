@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  Autocomplete,
   Button,
   ButtonGroup,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,57 +14,66 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { Prisma } from "@prisma/client";
 import { useForm } from "react-hook-form";
-import { FormInputDate } from "./DateTime";
 import { useState } from "react";
 import { FormMode } from ".";
 import { LoadingButton } from "@mui/lab";
-import {
-  DateTimePicker,
-  LocalizationProvider,
-  renderTimeViewClock,
-} from "@mui/x-date-pickers";
-import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { GetSubmissionsType } from "@/lib/submissions";
 
-type EventType = Prisma.EventGetPayload<Record<string, never>>;
+type SubmissionType = GetSubmissionsType[number];
+export type SubmissionFormType = Pick<
+  SubmissionType,
+  "title" | "abstract" | "relatedLinks"
+>;
 
-export type EventCreateProps = {
+type SubmissionCreateProps = {
   mode: "create";
-  onCreate: (data: Omit<EventType, "id">) => Promise<void>;
+  eventId: SubmissionType["eventId"];
+  onCreate: (
+    eventId: SubmissionType["eventId"],
+    data: SubmissionFormType
+  ) => Promise<void>;
   close: () => void;
   closeOnSubmit?: boolean;
 };
 
-export type EventUpdateProps = Omit<EventCreateProps, "mode" | "onCreate"> & {
+type SubmissionEditProps = Omit<SubmissionCreateProps, "mode" | "onCreate"> & {
   mode: "edit";
-  eventData: Partial<EventType> & { id: EventType["id"] };
-  onEdit?: (data: EventType) => Promise<void>;
-  onDelete?: (data: EventType["id"]) => Promise<void>;
+  submissionData: SubmissionType;
+  onEdit?: (
+    eventId: SubmissionType["eventId"],
+    data: SubmissionFormType
+  ) => Promise<void>;
+  onDelete?: (eventId: SubmissionType["eventId"]) => Promise<void>;
 };
 
-export type EventViewProps = Omit<
-  EventUpdateProps,
+type SubmissionViewProps = Omit<
+  SubmissionEditProps,
   "mode" | "onEdit" | "onDelete"
 > & {
   mode: "view";
 };
 
-export type EventFormProps =
-  | EventUpdateProps
-  | EventCreateProps
-  | EventViewProps;
+export type SubmissionFormProps =
+  | SubmissionEditProps
+  | SubmissionCreateProps
+  | SubmissionViewProps;
 
-export default function EventForm({
+export default function Submission({
   closeOnSubmit = false,
   ...props
-}: EventFormProps) {
+}: SubmissionFormProps) {
   const isCreateMode = props.mode === "create";
   const isViewMode = props.mode === "view";
 
-  const { register, handleSubmit, control } = useForm<EventType>({
-    defaultValues: isCreateMode ? undefined : props.eventData,
+  const { register, handleSubmit, setValue } = useForm<SubmissionFormType>({
+    defaultValues: isCreateMode
+      ? { relatedLinks: [] }
+      : {
+          abstract: props.submissionData.abstract,
+          title: props.submissionData.title,
+          relatedLinks: props.submissionData.relatedLinks,
+        },
   });
 
   const [loading, setLoading] = useState(false);
@@ -74,24 +85,29 @@ export default function EventForm({
   };
 
   if (isViewMode) {
-    return <EventViewForm {...props} />;
+    return <SubmissionViewForm {...props} />;
   }
 
   const isReadOnly = !isCreateMode && mode === "view";
 
   const onSubmit = isCreateMode
-    ? async (data: EventType) => {
+    ? async (data: Omit<Parameters<typeof props.onCreate>[1], "eventId">) => {
         setLoading(true);
-        props.onCreate(data);
+        props.onCreate(props.eventId, data);
         setLoading(false);
         setMode("view");
         if (closeOnSubmit) {
           props.close();
         }
       }
-    : async (data: EventType) => {
+    : async (
+        data: Omit<
+          Parameters<Exclude<typeof props.onEdit, undefined>>[1],
+          "eventId"
+        >
+      ) => {
         setLoading(true);
-        props.onEdit && (await props.onEdit(data));
+        props.onEdit && (await props.onEdit(props.eventId, data));
         setLoading(false);
         setMode("view");
         if (closeOnSubmit) {
@@ -120,7 +136,7 @@ export default function EventForm({
                   }}
                   label="Id"
                   variant="filled"
-                  {...register("id")}
+                  value={props.submissionData.id}
                 />
               </Tooltip>
             )}
@@ -131,7 +147,7 @@ export default function EventForm({
               label="Name"
               variant={isReadOnly ? "filled" : "outlined"}
               required
-              {...register("name")}
+              {...register("title")}
             />
           </Stack>
           <TextField
@@ -141,38 +157,38 @@ export default function EventForm({
             label="Description"
             multiline
             maxRows={5}
-            {...register("description")}
+            {...register("abstract")}
           />
-          <Stack
-            spacing={2}
-            direction={"row"}
-            sx={{
-              "& > *": {
-                flexGrow: 1,
-              },
+          <Autocomplete
+            multiple
+            id="related-links"
+            freeSolo
+            defaultValue={
+              props.mode === "create" ? [] : props.submissionData.relatedLinks
+            }
+            options={[] as readonly string[]}
+            renderTags={(value: readonly string[], getTagProps) =>
+              value.map((option: string, index: number) => (
+                <Chip
+                  variant="outlined"
+                  label={option}
+                  {...getTagProps({ index })}
+                  key={option}
+                />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant={isReadOnly ? "filled" : "standard"}
+                label="Related Links"
+                placeholder="https://..."
+              />
+            )}
+            onChange={(e, value) => {
+              setValue("relatedLinks", value);
             }}
-          >
-            <FormInputDate
-              control={control}
-              label="Start Date"
-              name="startDate"
-              readOnly={isReadOnly}
-            />
-            <FormInputDate
-              control={control}
-              label="End Date"
-              name="endDate"
-              readOnly={isReadOnly}
-            />
-          </Stack>
-          <TextField
-            InputProps={{
-              readOnly: isReadOnly,
-            }}
-            required
-            label="Venue"
-            variant={isReadOnly ? "filled" : "outlined"}
-            {...register("venue")}
+            readOnly={isReadOnly}
           />
           <ButtonGroup
             variant="text"
@@ -185,7 +201,7 @@ export default function EventForm({
           >
             {isCreateMode ? (
               <Button color="success" type="submit">
-                Create Event
+                Submit
               </Button>
             ) : (
               <>
@@ -193,7 +209,7 @@ export default function EventForm({
                   <>
                     {isReadOnly ? (
                       <Button color="warning" onClick={() => setMode("edit")}>
-                        Edit
+                        Edit Submission
                       </Button>
                     ) : (
                       <LoadingButton
@@ -201,7 +217,7 @@ export default function EventForm({
                         type="submit"
                         loading={loading}
                       >
-                        Save
+                        Save Submission
                       </LoadingButton>
                     )}
                   </>
@@ -216,12 +232,11 @@ export default function EventForm({
                         aria-describedby="alert-dialog-description"
                       >
                         <DialogTitle id="alert-dialog-title">
-                          {"Delete Event?"}
+                          {"Delete Submission?"}
                         </DialogTitle>
                         <DialogContent>
                           <DialogContentText id="alert-dialog-description">
-                            Are you sure you want to delete{" "}
-                            {props.eventData.name}?
+                            Are you sure you want to delete your submission?
                           </DialogContentText>
                         </DialogContent>
                         <DialogActions>
@@ -234,7 +249,7 @@ export default function EventForm({
                               setLoading(true);
                               !isCreateMode &&
                                 props.onDelete &&
-                                (await props.onDelete(props.eventData.id));
+                                (await props.onDelete(props.submissionData.id));
                               setLoading(false);
                               if (closeOnSubmit) {
                                 props.close();
@@ -264,96 +279,81 @@ export default function EventForm({
   );
 }
 
-const EventViewForm = (props: EventViewProps) => {
+const SubmissionViewForm = (props: SubmissionViewProps) => {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Stack spacing={2}>
-        <Stack
-          spacing={2}
-          direction={"row"}
-          sx={{
-            "& > *": {
-              flexGrow: 1,
-            },
-          }}
-        >
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            defaultValue={props.eventData.id}
-            label="Id"
-            variant="filled"
-          />
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            defaultValue={props.eventData.name}
-            label="Name"
-            variant={"filled"}
-            required
-          />
-        </Stack>
+    <Stack spacing={2}>
+      <Stack
+        spacing={2}
+        direction={"row"}
+        sx={{
+          "& > *": {
+            flexGrow: 1,
+          },
+        }}
+      >
         <TextField
           InputProps={{
             readOnly: true,
           }}
-          defaultValue={props.eventData.description}
-          label="Description"
-          multiline
-          maxRows={5}
+          label="Id"
+          variant="filled"
+          defaultValue={props.submissionData.id}
         />
-        <Stack
-          spacing={2}
-          direction={"row"}
-          sx={{
-            "& > *": {
-              flexGrow: 1,
-            },
-          }}
-        >
-          <DateTimePicker
-            label={"Start Date"}
-            viewRenderers={{
-              hours: renderTimeViewClock,
-              minutes: renderTimeViewClock,
-              seconds: renderTimeViewClock,
-            }}
-            value={dayjs(props.eventData.startDate)}
-            readOnly={true}
-          />
-          <DateTimePicker
-            label={"End Date"}
-            viewRenderers={{
-              hours: renderTimeViewClock,
-              minutes: renderTimeViewClock,
-              seconds: renderTimeViewClock,
-            }}
-            value={dayjs(props.eventData.endDate)}
-            readOnly={true}
-          />
-        </Stack>
         <TextField
           InputProps={{
             readOnly: true,
           }}
-          defaultValue={props.eventData.venue}
-          label="Venue"
+          label="Name"
           variant={"filled"}
+          required
+          defaultValue={props.submissionData.title}
         />
-        <ButtonGroup
-          variant="text"
-          aria-label="outlined button group"
-          sx={{
-            "& > *": {
-              flexGrow: 1,
-            },
-          }}
-        >
-          <Button onClick={() => props.close()}>Close</Button>
-        </ButtonGroup>
       </Stack>
-    </LocalizationProvider>
+      <TextField
+        InputProps={{
+          readOnly: true,
+        }}
+        label="Description"
+        multiline
+        maxRows={5}
+        defaultValue={props.submissionData.abstract}
+      />
+      <Autocomplete
+        multiple
+        id="related-links"
+        freeSolo
+        options={[] as readonly string[]}
+        renderTags={(value: readonly string[], getTagProps) =>
+          value.map((option: string, index: number) => (
+            <Chip
+              variant="outlined"
+              label={option}
+              {...getTagProps({ index })}
+              key={option}
+            />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="filled"
+            label="Related Links"
+            placeholder="https://..."
+          />
+        )}
+        defaultValue={props.submissionData.relatedLinks}
+      />
+      <ButtonGroup
+        variant="text"
+        aria-label="outlined button group"
+        sx={{
+          "& > *": {
+            flexGrow: 1,
+          },
+        }}
+      >
+        <Button onClick={() => props.close()}>Close</Button>
+      </ButtonGroup>
+    </Stack>
   );
 };

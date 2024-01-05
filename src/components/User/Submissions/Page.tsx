@@ -11,94 +11,106 @@ import {
   Skeleton,
   Stack,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import { Prisma } from "@prisma/client";
-import { useEffect, useState } from "react";
-import EventGrid from "./EventGrid";
+import { useEffect, useRef, useState } from "react";
+import SubmissionGrid from "./SubmissionGrid";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { createQueryString } from "@/lib/utils";
+import { GetSubmissionsType } from "@/lib/submissions";
+import AddIcon from "@mui/icons-material/Add";
 import { getAxios } from "@/lib/axios.config";
-import Forms from "@/components/Forms";
-import { EventsContext } from "@/contexts/EventsContext";
 import toast, { Toaster } from "react-hot-toast";
+import { SubmissionsContext } from "@/contexts/SubmissionsContext";
+import { SubmissionFormType } from "@/components/Forms/Submission";
+import Forms from "@/components/Forms";
+import SubmissionsAutoComplete from "./SubmissionsAutoComplete";
 
-export type EventsPageProps = {
+export type SubmissionsPageProps = {
   limit: number;
   page: number;
   order: Prisma.SortOrder;
 };
 
-export default function EventsPage(props: EventsPageProps) {
+export default function UserSubmissionsPage(props: SubmissionsPageProps) {
   const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState<
-    Prisma.EventGetPayload<Record<string, never>>[]
-  >([]);
-  const [newEventOpen, setNewEventOpen] = useState(false);
+  const [submissions, setSubmissions] = useState<GetSubmissionsType>([]);
+  const [newSubmissionOpen, setNewSubmissionOpen] = useState(false);
+
+  const newSubmissionEvent =
+    useRef<Prisma.EventGetPayload<Record<string, never>>>();
 
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
 
-  const handleUpdate = async (
-    id: Prisma.EventDeleteArgs["where"]["id"],
-    data: Prisma.EventUpdateInput
+  const handleCreate = async (
+    eventId: GetSubmissionsType[number]["eventId"],
+    data: SubmissionFormType
   ) => {
     try {
-      const res = await getAxios().put(`/events/${id}`, {
-        ...data,
-      });
-      const updatedEvent = res.data.data;
-      console.log({ updatedEvent });
-      toast.success("Updated event successfully");
-      // Set the events to the updated events
-      setEvents((events) =>
-        events.map((event) => {
-          if (event.id === id) {
-            return updatedEvent;
+      console.log({ data });
+      const res = await getAxios().post(`/events/${eventId}/register`, data);
+
+      const createdSubmission = res.data.data;
+      console.log({ createdSubmission });
+
+      // Set the submissions to the updated submissions
+      setSubmissions((submissions) => [...submissions, createdSubmission]);
+
+      toast.success("Created submission successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to create submission");
+    }
+  };
+
+  const handleUpdate = async (
+    eventId: GetSubmissionsType[number]["eventId"],
+    data: SubmissionFormType
+  ) => {
+    try {
+      const res = await getAxios().put(`/events/${eventId}/register`, data);
+      const updatedSubmission = res.data.data;
+      console.log({ updatedSubmission });
+      toast.success("Updated submission successfully");
+      // Set the submissions to the updated events
+      setSubmissions((submissions) =>
+        submissions.map((submission) => {
+          if (submission.eventId === eventId) {
+            return updatedSubmission;
           }
-          return event;
+          return submission;
         })
       );
     } catch (err) {
-      toast.error("Unable to update event");
       console.error(err);
+      toast.error("Failed to update submission");
     }
   };
 
-  const handleDelete = async (data: Prisma.EventDeleteArgs["where"]["id"]) => {
+  const handleDelete = async (
+    eventId: GetSubmissionsType[number]["eventId"]
+  ) => {
     try {
-      const res = await getAxios().delete(`/events/${data}`);
-      const deletedEvent = res.data.data;
-      console.log({ deletedEvent });
-      toast.success("Deleted event successfully");
-      // Set the events to the updated events
-      setEvents((events) => events.filter((event) => event.id !== data));
+      const res = await getAxios().delete(`/events/${eventId}/register`);
+      const deletedSubmission = res.data.data;
+      console.log({ deletedSubmission });
+      toast.success("Deleted submission successfully");
+      // Set the submissions to the updated submissions
+      setSubmissions((submissions) =>
+        submissions.filter((submission) => submission.eventId !== eventId)
+      );
     } catch (err) {
-      toast.error("Unable to delete event");
       console.error(err);
+      toast.error("Failed to delete submission");
     }
   };
 
-  const handleCreate = async (data: Prisma.EventCreateInput) => {
-    try {
-      const res = await getAxios().post(`/events`, {
-        ...data,
-      });
-      const createdEvent = res.data.data;
-      console.log({ createdEvent });
-      toast.success("Created event successfully");
-      // Set the events to the updated events
-      setEvents((events) => [...events, createdEvent]);
-    } catch (err) {
-      toast.error("Unable to create event");
-      console.error(err);
-    }
-  };
   useEffect(() => {
-    // Fetch the events from the API
+    // Fetch the submissions from the API
     setLoading(true);
     fetch(
-      `/api/events?limit=${props.limit}&skip=${
+      `/api/submissions?limit=${props.limit}&skip=${
         (props.page - 1) * props.limit
       }&ord=${props.order}`,
       {
@@ -116,7 +128,7 @@ export default function EventsPage(props: EventsPageProps) {
         }
       })
       .then((data) => {
-        setEvents(data.data);
+        setSubmissions(data.data);
       })
       .catch((err) => {
         console.error(err);
@@ -126,15 +138,14 @@ export default function EventsPage(props: EventsPageProps) {
       });
   }, [props.limit, props.order, props.page]);
 
-  // Fetch the events from the API
   return (
     <>
       <Toaster position="top-center" />
-      <EventsContext.Provider
+      <SubmissionsContext.Provider
         value={{
-          deleteEvent: handleDelete,
-          updateEvent: handleUpdate,
-          createEvent: handleCreate,
+          deleteSubmission: handleDelete,
+          updateSubmission: handleUpdate,
+          createSubmission: handleCreate,
           refresh: async () => {
             router.push(
               pathName +
@@ -147,10 +158,10 @@ export default function EventsPage(props: EventsPageProps) {
         }}
       >
         {loading ? (
-          <EventGridSkeleton />
+          <SunmissionsGridSkeleton />
         ) : (
           <Stack gap={"2rem"}>
-            <EventGrid events={events} />
+            <SubmissionGrid submissions={submissions} />
             <ButtonGroup variant="outlined" aria-label="Pagination Buttons">
               <Button
                 disabled={props.page <= 1}
@@ -176,7 +187,7 @@ export default function EventsPage(props: EventsPageProps) {
                       })
                   )
                 }
-                disabled={events.length < props.limit}
+                disabled={submissions.length < props.limit}
               >
                 Next
               </Button>
@@ -191,13 +202,15 @@ export default function EventsPage(props: EventsPageProps) {
             bottom: "2rem",
             right: "clamp(2rem, 5vw, 5rem)",
           }}
-          onClick={() => setNewEventOpen((newEventOpen) => !newEventOpen)}
+          onClick={() =>
+            setNewSubmissionOpen((newSubmissionOpen) => !newSubmissionOpen)
+          }
         >
           <AddIcon />
         </Fab>
         <Dialog
-          onClose={() => setNewEventOpen(false)}
-          open={newEventOpen}
+          onClose={() => setNewSubmissionOpen(false)}
+          open={newSubmissionOpen}
           sx={{
             h2: {
               padding: "0",
@@ -208,23 +221,29 @@ export default function EventsPage(props: EventsPageProps) {
           }}
         >
           <Stack gap={"24px"}>
-            <DialogTitle>Create Event</DialogTitle>
-            <Forms.Event
-              close={() => setNewEventOpen(false)}
+            <DialogTitle>Create Submission</DialogTitle>
+            {/* TODO: Add a fab option to create a submission */}
+            <SubmissionsAutoComplete
+              onChange={(val) => (newSubmissionEvent.current = val)}
+            />
+            <Forms.Submission
               mode="create"
-              onCreate={async (data) => {
-                await handleCreate(data);
-              }}
-              closeOnSubmit={true}
+              close={() => setNewSubmissionOpen(false)}
+              eventId="658ddec4ea20c0f0de700a3d"
+              onCreate={async (_, data) =>
+                newSubmissionEvent.current &&
+                (await handleCreate(newSubmissionEvent.current.id, data))
+              }
+              closeOnSubmit
             />
           </Stack>
         </Dialog>
-      </EventsContext.Provider>
+      </SubmissionsContext.Provider>
     </>
   );
 }
 
-export function EventGridSkeleton({
+export function SunmissionsGridSkeleton({
   cols = 3,
   rows = 3,
 }: {

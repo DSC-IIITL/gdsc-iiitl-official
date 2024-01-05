@@ -44,7 +44,7 @@ export default function SignIn() {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const json = await response.json();
       toast.success("Signed in successfully");
-      router.push("/admin/dashboard");
+      router.push("/admin");
     } catch (error) {
       if (error instanceof Error)
         toast.error(error.message || "Something went wrong");

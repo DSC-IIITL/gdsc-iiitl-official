@@ -1,5 +1,6 @@
 import Forms from "@/components/Forms";
-import { EventsContext } from "@/contexts/EventsContext";
+import { SubmissionsContext } from "@/contexts/SubmissionsContext";
+import { GetSubmissionsType } from "@/lib/submissions";
 import {
   Button,
   Card,
@@ -10,36 +11,34 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 
-export type EventCardProps = Prisma.EventGetPayload<Record<string, never>>;
+type SubmissionCardProps = GetSubmissionsType[number];
 
-export default function EventCard(props: EventCardProps) {
+export default function SubmissionCard(props: SubmissionCardProps) {
   const [open, setOpen] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const { deleteEvent, updateEvent } = useContext(EventsContext);
+  const { deleteSubmission, updateSubmission } = useContext(SubmissionsContext);
 
   return (
     <>
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {props.venue}
+            {props.event.name}
           </Typography>
           <Typography variant="h5" component="div">
-            {props.name}
+            {props.title}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {dayjs(props.startDate).format("ddd, DD MMM, YYYY")} -{" "}
-            {dayjs(props.endDate).format("ddd, DD MMM, YYYY")}
+            {dayjs(props.submissionTime).format("ddd, DD MMM, YYYY")}
           </Typography>
-          <Typography variant="body2">{props.description}</Typography>
+          <Typography variant="body2">{props.abstract}</Typography>
         </CardContent>
         <CardActions>
           <Button size="small" onClick={() => setOpen(true)}>
@@ -60,13 +59,14 @@ export default function EventCard(props: EventCardProps) {
         }}
       >
         <Stack gap={"24px"}>
-          <DialogTitle>{props.name}</DialogTitle>
-          <Forms.Event
+          <DialogTitle>{props.title}</DialogTitle>
+          <Forms.Submission
             close={() => handleClose()}
-            eventData={{ ...props }}
+            submissionData={{ ...props }}
             mode="edit"
-            onEdit={(data) => updateEvent(data.id, data)}
-            onDelete={(id) => deleteEvent(id)}
+            eventId={props.eventId}
+            onEdit={(id, data) => updateSubmission(id, data)}
+            onDelete={(id) => deleteSubmission(id)}
           />
         </Stack>
       </Dialog>
