@@ -1,11 +1,13 @@
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
-import Login from "./Login";
+import Login from "./UserLogin";
+import Signup from "./UserSignup";
 
 const AuthPage = {
   SignIn: SignIn,
   SignUp: SignUp,
-  Login: Login,
+  UserLogin: Login,
+  UserSignup: Signup,
 };
 
 export default AuthPage;
