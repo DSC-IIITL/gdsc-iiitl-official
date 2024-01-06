@@ -90,7 +90,7 @@ export default function Submission({
   const onSubmit = isCreateMode
     ? async (data: Omit<Parameters<typeof props.onCreate>[0], "eventId">) => {
         setLoading(true);
-        props.onCreate(data);
+        await props.onCreate(data);
         setLoading(false);
         setMode("view");
         if (closeOnSubmit) {
@@ -197,9 +197,9 @@ export default function Submission({
             }}
           >
             {isCreateMode ? (
-              <Button color="success" type="submit">
+              <LoadingButton color="success" type="submit" loading={loading}>
                 Submit
-              </Button>
+              </LoadingButton>
             ) : (
               <>
                 {props.onEdit && (
@@ -246,7 +246,7 @@ export default function Submission({
                               setLoading(true);
                               !isCreateMode &&
                                 props.onDelete &&
-                                (await props.onDelete(props.submissionData.id));
+                                (await props.onDelete(props.eventId));
                               setLoading(false);
                               if (closeOnSubmit) {
                                 props.close();
@@ -260,6 +260,7 @@ export default function Submission({
                       </Dialog>
                     )}
                     <LoadingButton
+                      loading={loading}
                       color="error"
                       onClick={() => setOpenConfirm(true)}
                     >

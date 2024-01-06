@@ -39,8 +39,9 @@ export default function UserSubmissionsPage(props: SubmissionsPageProps) {
     !!props.newSubmissionEvent
   );
 
-  const newSubmissionEvent =
-    useRef<Prisma.EventGetPayload<Record<string, never>>>();
+  const newSubmissionEvent = useRef<Prisma.EventGetPayload<
+    Record<string, never>
+  > | null>(props.newSubmissionEvent || null);
 
   const router = useRouter();
   const pathName = usePathname();
@@ -63,7 +64,9 @@ export default function UserSubmissionsPage(props: SubmissionsPageProps) {
       toast.success("Created submission successfully");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to create submission");
+      toast.error(
+        "Failed to create submission. Check if you have already created a submission for this event."
+      );
     }
   };
 
@@ -234,10 +237,11 @@ export default function UserSubmissionsPage(props: SubmissionsPageProps) {
             <Forms.Submission
               mode="create"
               close={() => setNewSubmissionOpen(false)}
-              onCreate={async (data) =>
-                newSubmissionEvent.current &&
-                (await handleCreate(newSubmissionEvent.current.id, data))
-              }
+              onCreate={async (data) => {
+                if (!newSubmissionEvent.current) return;
+                await handleCreate(newSubmissionEvent.current.id, data);
+                router.replace(pathName);
+              }}
               closeOnSubmit
             />
           </Stack>
