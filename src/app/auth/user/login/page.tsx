@@ -16,5 +16,5 @@ export default function UserLogin() {
 
   const BASE_URL = process.env["BASE_URL"] ?? "http://localhost";
 
-  return <Auth.Login baseUrl={BASE_URL} />;
+  return <Auth.UserLogin baseUrl={BASE_URL} />;
 }
