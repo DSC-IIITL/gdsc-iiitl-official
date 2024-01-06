@@ -28,17 +28,14 @@ export type SubmissionFormType = Pick<
 
 type SubmissionCreateProps = {
   mode: "create";
-  eventId: SubmissionType["eventId"];
-  onCreate: (
-    eventId: SubmissionType["eventId"],
-    data: SubmissionFormType
-  ) => Promise<void>;
+  onCreate: (data: SubmissionFormType) => Promise<void>;
   close: () => void;
   closeOnSubmit?: boolean;
 };
 
 type SubmissionEditProps = Omit<SubmissionCreateProps, "mode" | "onCreate"> & {
   mode: "edit";
+  eventId: SubmissionType["eventId"];
   submissionData: SubmissionType;
   onEdit?: (
     eventId: SubmissionType["eventId"],
@@ -91,9 +88,9 @@ export default function Submission({
   const isReadOnly = !isCreateMode && mode === "view";
 
   const onSubmit = isCreateMode
-    ? async (data: Omit<Parameters<typeof props.onCreate>[1], "eventId">) => {
+    ? async (data: Omit<Parameters<typeof props.onCreate>[0], "eventId">) => {
         setLoading(true);
-        props.onCreate(props.eventId, data);
+        props.onCreate(data);
         setLoading(false);
         setMode("view");
         if (closeOnSubmit) {

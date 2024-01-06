@@ -8,14 +8,19 @@ type EventResult = Prisma.EventGetPayload<Record<string, never>>;
 type SubmissionsAutoCompleteProps = {
   searchTimeout?: number;
   onChange: (event: EventResult) => void;
+  defaultEvent?: EventResult;
+  options?: EventResult[];
 };
 
 export default function SubmissionsAutoComplete({
   onChange,
   searchTimeout = 1000,
+  defaultEvent,
+  options: initialOptions = [],
 }: SubmissionsAutoCompleteProps) {
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<readonly EventResult[]>([]);
+  const [options, setOptions] =
+    useState<readonly EventResult[]>(initialOptions);
   const [loading, setLoading] = useState(false);
   const [inp, setInp] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout>>();
@@ -40,7 +45,7 @@ export default function SubmissionsAutoComplete({
         }
       }
     }, searchTimeout);
-  }, [inp]);
+  }, [inp, searchTimeout]);
 
   return (
     <Autocomplete
@@ -56,6 +61,7 @@ export default function SubmissionsAutoComplete({
       getOptionLabel={(option) => option.name}
       options={options}
       loading={loading}
+      defaultValue={defaultEvent}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -79,6 +85,7 @@ export default function SubmissionsAutoComplete({
           onChange(value);
         }
       }}
+      noOptionsText={"Start typing to search events"}
     />
   );
 }

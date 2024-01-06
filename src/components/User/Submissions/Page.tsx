@@ -29,12 +29,15 @@ export type SubmissionsPageProps = {
   limit: number;
   page: number;
   order: Prisma.SortOrder;
+  newSubmissionEvent?: Prisma.EventGetPayload<Record<string, never>>;
 };
 
 export default function UserSubmissionsPage(props: SubmissionsPageProps) {
   const [loading, setLoading] = useState(true);
   const [submissions, setSubmissions] = useState<GetSubmissionsType>([]);
-  const [newSubmissionOpen, setNewSubmissionOpen] = useState(false);
+  const [newSubmissionOpen, setNewSubmissionOpen] = useState(
+    !!props.newSubmissionEvent
+  );
 
   const newSubmissionEvent =
     useRef<Prisma.EventGetPayload<Record<string, never>>>();
@@ -225,12 +228,13 @@ export default function UserSubmissionsPage(props: SubmissionsPageProps) {
             {/* TODO: Add a fab option to create a submission */}
             <SubmissionsAutoComplete
               onChange={(val) => (newSubmissionEvent.current = val)}
+              defaultEvent={props.newSubmissionEvent}
+              options={props.newSubmissionEvent && [props.newSubmissionEvent]}
             />
             <Forms.Submission
               mode="create"
               close={() => setNewSubmissionOpen(false)}
-              eventId="658ddec4ea20c0f0de700a3d"
-              onCreate={async (_, data) =>
+              onCreate={async (data) =>
                 newSubmissionEvent.current &&
                 (await handleCreate(newSubmissionEvent.current.id, data))
               }

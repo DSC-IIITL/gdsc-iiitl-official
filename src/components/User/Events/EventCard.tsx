@@ -33,7 +33,7 @@ export default function EventCard(props: EventCardProps) {
         <CardActions>
           <Button
             size="small"
-            onClick={() => router.push("/user/submissions?new=true")}
+            onClick={() => router.push(`/user/submissions?new=${props.id}`)}
           >
             Submit
           </Button>
