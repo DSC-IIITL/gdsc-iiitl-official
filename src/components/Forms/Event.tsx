@@ -82,7 +82,7 @@ export default function EventForm({
   const onSubmit = isCreateMode
     ? async (data: EventType) => {
         setLoading(true);
-        props.onCreate(data);
+        await props.onCreate(data);
         setLoading(false);
         setMode("view");
         if (closeOnSubmit) {
@@ -184,9 +184,9 @@ export default function EventForm({
             }}
           >
             {isCreateMode ? (
-              <Button color="success" type="submit">
+              <LoadingButton color="success" type="submit" loading={loading}>
                 Create Event
-              </Button>
+              </LoadingButton>
             ) : (
               <>
                 {props.onEdit && (
@@ -248,6 +248,7 @@ export default function EventForm({
                       </Dialog>
                     )}
                     <LoadingButton
+                      loading={loading}
                       color="error"
                       onClick={() => setOpenConfirm(true)}
                     >
