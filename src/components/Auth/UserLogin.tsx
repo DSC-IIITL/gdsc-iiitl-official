@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import GDSCBanner from "../Logos/GDSCBanner";
 import Copyright from "../Copyright";
 import Script from "next/script";
+import { useSearchParams } from "next/navigation";
 
 type LoginPageProps = {
   baseUrl?: string;
@@ -12,6 +13,9 @@ type LoginPageProps = {
 
 export default function Login(props: LoginPageProps) {
   const BASE_URL = props.baseUrl ?? "http://localhost";
+
+  const redirectUri = useSearchParams().get("redirect");
+
   return (
     <>
       <Toaster position="top-center" />
@@ -37,7 +41,7 @@ export default function Login(props: LoginPageProps) {
               data-client_id="730424519169-ttsnlbjvio129marg0h2gsmvkphsr8lr.apps.googleusercontent.com"
               data-context="signin"
               data-ux_mode="popup"
-              data-login_uri={`${BASE_URL}/api/auth/user`}
+              data-login_uri={`${BASE_URL}/api/auth/user?redirect=${redirectUri}`}
               data-auto_prompt="false"
             ></div>
 

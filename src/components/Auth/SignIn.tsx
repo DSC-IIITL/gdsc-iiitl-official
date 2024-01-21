@@ -14,13 +14,16 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import GDSCBanner from "@/components/Logos/GDSCBanner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Copyright from "@/components/Copyright";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function SignIn() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
+
+  // Get the redirect uri
+  const redirectUri = useSearchParams().get("redirect");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     console.log("SUBMIT");
@@ -44,7 +47,7 @@ export default function SignIn() {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const json = await response.json();
       toast.success("Signed in successfully");
-      router.push("/admin");
+      router.push(redirectUri || "/admin");
     } catch (error) {
       if (error instanceof Error)
         toast.error(error.message || "Something went wrong");
