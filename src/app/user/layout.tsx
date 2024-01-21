@@ -1,7 +1,7 @@
 import React from "react";
 import { verifyToken } from "@/lib/server/auth-utils";
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import UserDashboard from "@/components/User/Dashboard";
 
@@ -16,9 +16,15 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
+  const url = headers().get("x-url"); // From the middleware
+
   const token = cookies().get("token")?.value;
   if (!token || !verifyToken(token, (auth) => auth.role === "user"))
-    redirect("/auth/user/login");
+    redirect(
+      url == null
+        ? `/auth/user/login`
+        : `/auth/user/login?redirect=${encodeURIComponent(url)}`
+    );
 
   return (
     <html lang="en">
