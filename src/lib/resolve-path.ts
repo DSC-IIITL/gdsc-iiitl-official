@@ -7,7 +7,7 @@ export function validatePath(str: string) {
   }
   // Check if the origin is in white listed origins
   const whiteListedOrigins =
-    process.env.WHITE_LISTED_ORIGINS?.split(",")?.map((str) => str.trim()) ||
+    process.env["WHITE_LISTED_DOMAINS"]?.split(",")?.map((str) => str.trim()) ||
     [];
 
   const url = new URL(str);
