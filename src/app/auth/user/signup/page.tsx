@@ -9,10 +9,15 @@ export const metadata: Metadata = {
   description: "Signup to GDSC IIIT Lucknow.",
 };
 
-export default function UserLogin() {
+export default function UserLogin({
+  searchParams,
+}: {
+  searchParams: { redirect?: string };
+}) {
+  const redirectTo = searchParams.redirect ?? "/user";
   const token = cookies().get("token")?.value;
   if (token && verifyToken(token, (auth) => auth.role === "user"))
-    redirect("/user");
+    redirect(redirectTo);
 
   const BASE_URL = process.env["BASE_URL"] ?? "http://localhost";
 
