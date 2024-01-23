@@ -6,7 +6,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const body = await request.formData();
-  const redirect = new URL(request.url).searchParams.get("redirect") || "/user";
+
+  const redirectTo =
+    new URL(request.url).searchParams.get("redirect") || "/user";
 
   const client = new OAuth2Client();
 
@@ -86,14 +88,9 @@ export async function POST(request: NextRequest) {
         });
 
         // Set the token and redirect to the user page
-        const redirectionUrl = process.env["BASE_URL"];
-        if (!redirectionUrl) throw new Error("No base url found in env");
-        const response = NextResponse.redirect(
-          redirect ? redirect : `${redirectionUrl}/user`,
-          {
-            status: 302,
-          }
-        );
+        const response = NextResponse.redirect(redirectTo, {
+          status: 302,
+        });
 
         response.cookies.set("token", token, {
           httpOnly: true,
@@ -132,14 +129,9 @@ export async function POST(request: NextRequest) {
     });
 
     // Set the token and redirect to the user page
-    const redirectionUrl = process.env["BASE_URL"];
-    if (!redirectionUrl) throw new Error("No base url found in env");
-    const response = NextResponse.redirect(
-      redirect ? redirect : `${redirectionUrl}/user`,
-      {
-        status: 302,
-      }
-    );
+    const response = NextResponse.redirect(redirectTo, {
+      status: 302,
+    });
 
     response.cookies.set("token", token, {
       httpOnly: true,
@@ -160,14 +152,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const redirectUrl =
+  const redirectTo =
     new URL(request.url).searchParams.get("redirect") || "/user";
 
   // Redirect to the user page if the cookie is set
   const token = request.cookies.get("token")?.value;
 
   if (token) {
-    return Response.redirect(redirectUrl);
+    return Response.redirect(redirectTo);
   }
 
   return Response.redirect("/auth/user/login");
