@@ -1,4 +1,5 @@
 import AuthPage from "@/components/Auth";
+import { resolvePath } from "@/lib/resolve-path";
 import { verifyToken } from "@/lib/server/auth-utils";
 import { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -17,7 +18,7 @@ export default function UserLogin({
   const redirectTo = searchParams.redirect ?? "/user";
   const token = cookies().get("token")?.value;
   if (token && verifyToken(token, (auth) => auth.role === "user"))
-    redirect(redirectTo);
+    redirect(resolvePath(redirectTo).toString());
 
   const BASE_URL = process.env["BASE_URL"] ?? "http://localhost";
 

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { Metadata } from "next";
 import Auth from "@/components/Auth";
+import { resolvePath } from "@/lib/resolve-path";
 
 export const metadata: Metadata = {
   title: "User Login | GDSC IIITL",
@@ -17,7 +18,7 @@ export default function UserLogin({
   const redirectTo = searchParams.redirect ?? "/user";
   const token = cookies().get("token")?.value;
   if (token && verifyToken(token, (auth) => auth.role === "user"))
-    redirect(redirectTo);
+    redirect(resolvePath(redirectTo).toString());
 
   const BASE_URL = process.env["BASE_URL"] ?? "http://localhost";
 

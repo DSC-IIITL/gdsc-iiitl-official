@@ -17,3 +17,24 @@ export function validatePath(str: string) {
   }
   return false;
 }
+
+export function resolvePath(path: string, defaultPath: string = "/"): URL {
+  try {
+    const url = new URL(path);
+    // Valid url
+    return url;
+  } catch (err) {
+    // A path
+    const origin =
+      typeof window === "undefined"
+        ? process.env["BASE_URL"]
+        : window.location.origin;
+    try {
+      const url = new URL(path, origin);
+      return url;
+    } catch (err) {
+      const url = new URL(defaultPath, origin);
+      return url;
+    }
+  }
+}

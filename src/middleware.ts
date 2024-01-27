@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { validatePath } from "./lib/resolve-path";
+import { resolvePath, validatePath } from "./lib/resolve-path";
 
 export function middleware(request: Request) {
   const url = new URL(request.url);
@@ -8,7 +8,7 @@ export function middleware(request: Request) {
     const url = new URL(request.url);
     url.searchParams.delete("redirect");
     // redirect to the same url without redirect query param
-    return NextResponse.redirect(url.toString(), { status: 302 });
+    return NextResponse.redirect(resolvePath(url.toString()), { status: 302 });
   }
   // Store current request url path and search query param in a custom header
   const requestHeaders = new Headers(request.headers);

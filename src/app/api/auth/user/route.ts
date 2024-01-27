@@ -1,4 +1,5 @@
 import prisma from "@/lib/db/prisma";
+import { resolvePath } from "@/lib/resolve-path";
 import { signToken } from "@/lib/server/auth-utils";
 import { extractEnrollmentNumber } from "@/lib/utils";
 import { OAuth2Client } from "google-auth-library";
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Set the token and redirect to the user page
-        const response = NextResponse.redirect(redirectTo, {
+        const response = NextResponse.redirect(resolvePath(redirectTo), {
           status: 302,
         });
 
@@ -129,7 +130,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Set the token and redirect to the user page
-    const response = NextResponse.redirect(redirectTo, {
+    const response = NextResponse.redirect(resolvePath(redirectTo), {
       status: 302,
     });
 
@@ -159,10 +160,10 @@ export async function GET(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   if (token) {
-    return Response.redirect(redirectTo);
+    return Response.redirect(resolvePath(redirectTo));
   }
 
-  return Response.redirect("/auth/user/login");
+  return Response.redirect(resolvePath("/auth/user/login"));
 }
 
 async function verify(client: OAuth2Client, token: string) {

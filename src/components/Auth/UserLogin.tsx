@@ -41,7 +41,10 @@ export default function Login(props: LoginPageProps) {
               data-client_id="730424519169-ttsnlbjvio129marg0h2gsmvkphsr8lr.apps.googleusercontent.com"
               data-context="signin"
               data-ux_mode="popup"
-              data-login_uri={`${BASE_URL}/api/auth/user?redirect=${redirectUri}`}
+              data-login_uri={
+                `${BASE_URL}/api/auth/user` +
+                (redirectUri ? `?redirect=${redirectUri}` : ``)
+              }
               data-auto_prompt="false"
             ></div>
 

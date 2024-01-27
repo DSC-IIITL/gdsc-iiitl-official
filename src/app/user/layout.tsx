@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import UserDashboard from "@/components/User/Dashboard";
+import { resolvePath } from "@/lib/resolve-path";
 
 // PROTECTED ROUTES
 
@@ -17,13 +18,16 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   const url = headers().get("x-url"); // From the middleware
+  console.log({ url });
 
   const token = cookies().get("token")?.value;
   if (!token || !verifyToken(token, (auth) => auth.role === "user"))
     redirect(
-      url == null
-        ? `/auth/user/login`
-        : `/auth/user/login?redirect=${encodeURIComponent(url)}`
+      resolvePath(
+        url == null
+          ? `/auth/user/login`
+          : `/auth/user/login?redirect=${encodeURIComponent(url)}`
+      ).toString()
     );
 
   return (
